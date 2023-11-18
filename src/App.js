@@ -5,6 +5,29 @@ import PollutionMeter from './components/PollutionMeter';
 import EcoActions from './components/EcoActions';
 import GameOver from './components/GameOver';
 
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Error caught by error boundary:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <h1>Something went wrong. Please check the console for details.</h1>;
+    }
+
+    return this.props.children;
+  }
+}
+
 function App() {
   const [resources, setResources] = useState({
     money: 10000,
@@ -51,19 +74,21 @@ function App() {
   };
 
   return (
-    <div>
-      <h1>Eco-Friendly City Builder</h1>
-      <ResourcePanel resources={resources} />
-      <PollutionMeter pollutionLevel={pollutionLevel} />
-      {!isGameOver ? (
-        <div>
-          <City onGameOver={handleGameOver} />
-          <EcoActions onEcoAction={handleEcoAction} />
-        </div>
-      ) : (
-        <GameOver score={resources.money} onRestart={handleRestart} />
-      )}
-    </div>
+    <ErrorBoundary>
+      <div>
+        <h1>Eco-Friendly City Builder</h1>
+        <ResourcePanel resources={resources} />
+        <PollutionMeter pollutionLevel={pollutionLevel} />
+        {!isGameOver ? (
+          <div>
+            <City onGameOver={handleGameOver} />
+            <EcoActions onEcoAction={handleEcoAction} />
+          </div>
+        ) : (
+          <GameOver score={resources.money} onRestart={handleRestart} />
+        )}
+      </div>
+    </ErrorBoundary>
   );
 }
 
