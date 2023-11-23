@@ -4,7 +4,6 @@ import ResourcePanel from './components/ResourcePanel';
 import PollutionMeter from './components/PollutionMeter';
 import EcoActions from './components/EcoActions';
 import GameOver from './components/GameOver';
-import { render } from 'react-dom';
 
 function ErrorBoundary({ children }) {
   const [hasError, setHasError] = useState(false);
@@ -23,8 +22,9 @@ function ErrorBoundary({ children }) {
     );
   }
 
-  return children;
+  return <>{children}</>; // Render the children here
 }
+
 
 function App() {
   const [resources, setResources] = useState({
@@ -36,7 +36,7 @@ function App() {
   const [pollutionLevel, setPollutionLevel] = useState(0);
   const [isGameOver, setGameOver] = useState(false);
 
-  const { money, energy } = resources;
+  const { money } = resources;
   const ACTION_COST = 500;
   const POLLUTION_INCREASE = 10;
 
@@ -91,8 +91,5 @@ function App() {
     </ErrorBoundary>
   );
 }
-
-// Remove the render function here
-// render();
 
 export default App;

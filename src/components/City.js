@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';  // Import PropTypes for prop type validation
 import Building from './Building';
 import { CityContainer } from '../styles';
 
@@ -8,9 +9,15 @@ const City = () => {
   const addBuilding = () => {
     const newBuilding = {
       id: buildings.length + 1,
-      type: 'residential', // You can have different types like 'commercial', 'industrial', etc.
+      type: generateRandomBuildingType(), // Use a function to generate a random building type
     };
     setBuildings([...buildings, newBuilding]);
+  };
+
+  const generateRandomBuildingType = () => {
+    const buildingTypes = ['residential', 'commercial', 'industrial']; // Add more types as needed
+    const randomIndex = Math.floor(Math.random() * buildingTypes.length);
+    return buildingTypes[randomIndex];
   };
 
   return (
@@ -23,6 +30,16 @@ const City = () => {
       </div>
     </CityContainer>
   );
+};
+
+// Prop type validation
+City.propTypes = {
+  buildings: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      type: PropTypes.string.isRequired,
+    })
+  ),
 };
 
 export default City;
