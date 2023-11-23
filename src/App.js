@@ -4,28 +4,26 @@ import ResourcePanel from './components/ResourcePanel';
 import PollutionMeter from './components/PollutionMeter';
 import EcoActions from './components/EcoActions';
 import GameOver from './components/GameOver';
+import { render } from 'react-dom';
 
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
+function ErrorBoundary({ children }) {
+  const [hasError, setHasError] = useState(false);
 
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, errorInfo) {
+  const componentDidCatch = (error, errorInfo) => {
     console.error('Error caught by error boundary:', error, errorInfo);
+    setHasError(true);
+  };
+
+  if (hasError) {
+    return (
+      <>
+        <h1>Something went wrong.</h1>
+        <p>Please refresh the page or contact support.</p>
+      </>
+    );
   }
 
-  render() {
-    if (this.state.hasError) {
-      return <h1>Something went wrong. Please check the console for details.</h1>;
-    }
-
-    return this.props.children;
-  }
+  return children;
 }
 
 function App() {
@@ -38,32 +36,28 @@ function App() {
   const [pollutionLevel, setPollutionLevel] = useState(0);
   const [isGameOver, setGameOver] = useState(false);
 
-  const handleEcoAction = (actionType) => {
-    // Implement logic to handle eco-friendly actions and update resources/pollution
-    // For simplicity, let's assume each action consumes money and affects pollution
-    const actionCost = 500; // Adjust cost as needed
-    const pollutionIncrease = 10; // Adjust pollution increase as needed
+  const { money, energy } = resources;
+  const ACTION_COST = 500;
+  const POLLUTION_INCREASE = 10;
 
-    if (resources.money >= actionCost) {
+  const handleEcoAction = (actionType) => {
+    if (money >= ACTION_COST) {
       setResources((prevResources) => ({
         ...prevResources,
-        money: prevResources.money - actionCost,
+        money: prevResources.money - ACTION_COST,
       }));
 
-      setPollutionLevel((prevLevel) => prevLevel + pollutionIncrease);
+      setPollutionLevel((prevLevel) => prevLevel + POLLUTION_INCREASE);
     }
   };
 
   const handleGameOver = () => {
-    // Implement logic to determine game over conditions
-    // For simplicity, let's assume the game ends when pollution reaches a certain level
     if (pollutionLevel >= 50) {
       setGameOver(true);
     }
   };
 
   const handleRestart = () => {
-    // Implement logic to restart the game
     setResources({
       money: 10000,
       energy: 100,
@@ -73,23 +67,32 @@ function App() {
     setGameOver(false);
   };
 
+  const containerStyle = {
+    textAlign: 'center',
+    maxWidth: '800px',
+    margin: 'auto',
+  };
+
   return (
     <ErrorBoundary>
-      <div>
+      <div style={containerStyle}>
         <h1>Eco-Friendly City Builder</h1>
         <ResourcePanel resources={resources} />
         <PollutionMeter pollutionLevel={pollutionLevel} />
         {!isGameOver ? (
-          <div>
+          <>
             <City onGameOver={handleGameOver} />
             <EcoActions onEcoAction={handleEcoAction} />
-          </div>
+          </>
         ) : (
-          <GameOver score={resources.money} onRestart={handleRestart} />
+          <GameOver score={money} onRestart={handleRestart} />
         )}
       </div>
     </ErrorBoundary>
   );
 }
+
+// Remove the render function here
+// render();
 
 export default App;
