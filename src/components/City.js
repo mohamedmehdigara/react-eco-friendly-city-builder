@@ -13,7 +13,7 @@ const City = () => {
       type: generateRandomBuildingType(),
       ecoLevel: 1,
     };
-    setBuildings([...buildings, newBuilding]);
+    setBuildings((prevBuildings) => [...prevBuildings, newBuilding]);
   };
 
   const generateRandomBuildingType = () => {
