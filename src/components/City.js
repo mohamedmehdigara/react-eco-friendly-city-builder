@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';  // Import PropTypes for prop type validation
+import PropTypes from 'prop-types';
 import Building from './Building';
 import { CityContainer } from '../styles';
 
-const City = () => {
-  const [buildings, setBuildings] = useState([]);
+const City = ({ buildings }) => {
+  // Use the 'buildings' prop directly to initialize state
+  const [cityBuildings, setCityBuildings] = useState(buildings || []);
 
   const addBuilding = () => {
     const newBuilding = {
-      id: buildings.length + 1,
-      type: generateRandomBuildingType(), // Use a function to generate a random building type
+      id: cityBuildings.length + 1,
+      type: generateRandomBuildingType(),
     };
-    setBuildings([...buildings, newBuilding]);
+    setCityBuildings((prevBuildings) => [...prevBuildings, newBuilding]);
   };
 
   const generateRandomBuildingType = () => {
@@ -24,7 +25,7 @@ const City = () => {
     <CityContainer>
       <button onClick={addBuilding}>Build Eco-Friendly Building</button>
       <div>
-        {buildings.map((building) => (
+        {cityBuildings.map((building) => (
           <Building key={building.id} type={building.type} />
         ))}
       </div>

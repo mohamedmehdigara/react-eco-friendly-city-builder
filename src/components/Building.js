@@ -7,7 +7,7 @@ const Building = ({ type, floors, color }) => (
   <BuildingContainer type={type} color={color}>
     {/* Capitalize the first letter of the building type */}
     <p>{capitalizeFirstLetter(type)} Building</p>
-    
+
     {/* Display additional building details if available */}
     {floors && <BuildingDetails>Floors: {floors}</BuildingDetails>}
   </BuildingContainer>
