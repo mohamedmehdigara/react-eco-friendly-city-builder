@@ -1,12 +1,14 @@
 // Building.js
 import React from 'react';
 import PropTypes from 'prop-types';
-import { BuildingContainer, BuildingDetails } from '../styles';
+import { BuildingContainer, BuildingDetails, UpgradeButton } from '../styles';
 
-const Building = ({ type, floors, color }) => (
+const Building = ({ type, floors, color, ecoLevel, onUpgrade }) => (
   <BuildingContainer type={type} color={color}>
     <p>{capitalizeFirstLetter(type)} Building</p>
     {floors && <BuildingDetails>Floors: {floors}</BuildingDetails>}
+    <BuildingDetails>Eco Level: {ecoLevel}</BuildingDetails>
+    <UpgradeButton onClick={onUpgrade}>Upgrade</UpgradeButton>
   </BuildingContainer>
 );
 
@@ -14,6 +16,8 @@ Building.propTypes = {
   type: PropTypes.string.isRequired,
   floors: PropTypes.number,
   color: PropTypes.string,
+  ecoLevel: PropTypes.number.isRequired,
+  onUpgrade: PropTypes.func.isRequired,
 };
 
 Building.defaultProps = {
@@ -21,7 +25,7 @@ Building.defaultProps = {
   color: '#ccc',
 };
 
-const capitalizeFirstLetter = (string) =>
-  string.charAt(0).toUpperCase() + string.slice(1);
+const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 
 export default Building;
+

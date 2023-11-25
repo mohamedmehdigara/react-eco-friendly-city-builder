@@ -4,15 +4,16 @@ import PropTypes from 'prop-types';
 import Building from './Building';
 import { CityContainer } from '../styles';
 
-const City = ({ buildings }) => {
-  const [cityBuildings, setCityBuildings] = useState(buildings || []);
+const City = () => {
+  const [buildings, setBuildings] = useState([]);
 
   const addBuilding = () => {
     const newBuilding = {
-      id: cityBuildings.length + 1,
+      id: buildings.length + 1,
       type: generateRandomBuildingType(),
+      ecoLevel: 1,
     };
-    setCityBuildings((prevBuildings) => [...prevBuildings, newBuilding]);
+    setBuildings([...buildings, newBuilding]);
   };
 
   const generateRandomBuildingType = () => {
@@ -21,12 +22,25 @@ const City = ({ buildings }) => {
     return buildingTypes[randomIndex];
   };
 
+  const upgradeBuilding = (id) => {
+    setBuildings((prevBuildings) =>
+      prevBuildings.map((building) =>
+        building.id === id ? { ...building, ecoLevel: building.ecoLevel + 1 } : building
+      )
+    );
+  };
+
   return (
     <CityContainer>
       <button onClick={addBuilding}>Build Eco-Friendly Building</button>
       <div>
-        {cityBuildings.map((building) => (
-          <Building key={building.id} type={building.type} />
+        {buildings.map((building) => (
+          <Building
+            key={building.id}
+            type={building.type}
+            ecoLevel={building.ecoLevel}
+            onUpgrade={() => upgradeBuilding(building.id)}
+          />
         ))}
       </div>
     </CityContainer>
@@ -38,6 +52,7 @@ City.propTypes = {
     PropTypes.shape({
       id: PropTypes.number.isRequired,
       type: PropTypes.string.isRequired,
+      ecoLevel: PropTypes.number.isRequired,
     })
   ),
 };

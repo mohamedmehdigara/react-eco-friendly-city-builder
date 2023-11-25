@@ -69,3 +69,14 @@ export const BuildingDetails = styled.p`
   font-size: 14px;
   margin-top: 5px;
 `;
+
+export const UpgradeButton = styled.button`
+  background-color: #8cff66;
+  padding: 5px;
+  cursor: pointer;
+  border: none;
+  border-radius: 3px;
+  color: #333;
+  font-weight: bold;
+  margin-top: 5px;
+`;
