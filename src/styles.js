@@ -63,3 +63,9 @@ export const GameOverContainer = styled.div`
     cursor: pointer;
   }
 `;
+
+export const BuildingDetails = styled.p`
+  color: #666;
+  font-size: 14px;
+  margin-top: 5px;
+`;
