@@ -5,7 +5,7 @@ import Building from './Building';
 import EducationCenter from './EducationCenter'; // Import the EducationCenter component
 import { CityContainer } from '../styles';
 
-const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter }) => {
+const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter }) => {
   const [buildings, setBuildings] = useState([]);
 
   const addBuilding = () => {
@@ -47,6 +47,8 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter }
           />
         ))}
       </div>
+      {hasEducationCenter && <EducationCenter onBuildEducationCenter={onBuildEducationCenter} />} {/* Render EducationCenter if it has been built */}
+
     </CityContainer>
   );
 };

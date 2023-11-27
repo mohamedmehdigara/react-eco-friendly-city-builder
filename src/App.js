@@ -73,9 +73,13 @@ function App() {
     console.log('Building Education Center...');
     // Implement logic to build the Education Center
     // Adjust resources, setHasEducationCenter, or perform other actions
-    setHasEducationCenter((prevHasEducationCenter) => !prevHasEducationCenter);
-    console.log('Education Center built. hasEducationCenter:', hasEducationCenter);
+    setHasEducationCenter((prevHasEducationCenter) => {
+      const newHasEducationCenter = !prevHasEducationCenter;
+      console.log('Education Center built. hasEducationCenter:', newHasEducationCenter);
+      return newHasEducationCenter;
+    });
   };
+  
   
 
   const containerStyle = {
@@ -98,6 +102,7 @@ function App() {
               setResources={setResources}
               setPollutionLevel={setPollutionLevel}
               hasEducationCenter={hasEducationCenter}
+              onBuildEducationCenter={handleBuildEducationCenter}
             />
             <EcoActions onEcoAction={handleEcoAction} onBuildEducationCenter={handleBuildEducationCenter} />
           </>
