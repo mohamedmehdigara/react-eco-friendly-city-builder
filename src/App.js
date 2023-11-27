@@ -104,7 +104,7 @@ function App() {
         ) : (
           <GameOver score={resources.money} onRestart={handleRestart} />
         )}
-        {hasEducationCenter && <EducationCenter />}
+         <EducationCenter />
       </div>
     </ErrorBoundary>
   );

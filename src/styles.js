@@ -82,8 +82,9 @@ export const UpgradeButton = styled.button`
 `;
 
 export const EducationCenterContainer = styled.div`
-  background-color: #cce5ff;
-  padding: 20px;
-  margin: 10px;
-  border-radius: 5px;
+background-color: #cce5ff;
+padding: 20px;
+margin: 10px;
+border-radius: 5px;
+  
 `;
