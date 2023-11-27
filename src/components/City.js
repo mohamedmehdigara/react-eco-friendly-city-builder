@@ -2,12 +2,11 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Building from './Building';
-import EducationCenter from './EducationCenter';
+import EducationCenter from './EducationCenter'; // Import the EducationCenter component
 import { CityContainer } from '../styles';
 
-const City = () => {
+const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter }) => {
   const [buildings, setBuildings] = useState([]);
-  const [hasEducationCenter, setHasEducationCenter] = useState(false);
 
   const addBuilding = () => {
     const newBuilding = {
@@ -15,7 +14,7 @@ const City = () => {
       type: generateRandomBuildingType(),
       ecoLevel: 1,
     };
-    setBuildings((prevBuildings) => [...prevBuildings, newBuilding]);
+    setBuildings([...buildings, newBuilding]);
   };
 
   const generateRandomBuildingType = () => {
@@ -32,17 +31,9 @@ const City = () => {
     );
   };
 
-  const buildEducationCenter = () => {
-    setHasEducationCenter(true);
-    // Add logic for any bonuses or effects on eco-friendliness or resource production
-  };
-
   return (
     <CityContainer>
       <button onClick={addBuilding}>Build Eco-Friendly Building</button>
-      {hasEducationCenter ? (
-        <EducationCenter onBuildEducationCenter={buildEducationCenter} />
-      ) : null}
       <div>
         {buildings.map((building) => (
           <Building
@@ -53,18 +44,16 @@ const City = () => {
           />
         ))}
       </div>
+      {hasEducationCenter && <EducationCenter />} {/* Render EducationCenter if it has been built */}
     </CityContainer>
   );
 };
 
 City.propTypes = {
-  buildings: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      type: PropTypes.string.isRequired,
-      ecoLevel: PropTypes.number.isRequired,
-    })
-  ),
+  resources: PropTypes.object.isRequired,
+  setResources: PropTypes.func.isRequired,
+  setPollutionLevel: PropTypes.func.isRequired,
+  hasEducationCenter: PropTypes.bool.isRequired,
 };
 
 export default City;
