@@ -6,7 +6,6 @@ import PollutionMeter from './components/PollutionMeter';
 import EcoActions from './components/EcoActions';
 import GameOver from './components/GameOver';
 import EducationCenter from './components/EducationCenter'; // Import the EducationCenter component
-import { render } from 'react-dom';
 
 function ErrorBoundary({ children }) {
   const [hasError, setHasError] = useState(false);
@@ -74,8 +73,10 @@ function App() {
     console.log('Building Education Center...');
     // Implement logic to build the Education Center
     // Adjust resources, setHasEducationCenter, or perform other actions
-    setHasEducationCenter(true);
+    setHasEducationCenter((prevHasEducationCenter) => !prevHasEducationCenter);
+    console.log('Education Center built. hasEducationCenter:', hasEducationCenter);
   };
+  
 
   const containerStyle = {
     textAlign: 'center',
