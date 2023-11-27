@@ -1,4 +1,3 @@
-// Challenges.js
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -7,7 +6,8 @@ const Challenges = ({ challenges }) => (
     <h2>Challenges</h2>
     <ul>
       {challenges.map((challenge) => (
-        <li key={challenge.id} style={{ textDecoration: challenge.completed ? 'line-through' : 'none' }}>
+        // Extracting styles to a separate object for better readability
+        <li key={challenge.id} style={getListItemStyle(challenge.completed)}>
           {challenge.description}
         </li>
       ))}
@@ -24,5 +24,11 @@ Challenges.propTypes = {
     })
   ).isRequired,
 };
+
+// Function to determine the style based on the completed status
+const getListItemStyle = (completed) => ({
+  textDecoration: completed ? 'line-through' : 'none',
+  // Add more styles if needed
+});
 
 export default Challenges;
