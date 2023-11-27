@@ -76,7 +76,6 @@ function App() {
     // Adjust resources, setHasEducationCenter, or perform other actions
     setHasEducationCenter(true);
   };
-  
 
   const containerStyle = {
     textAlign: 'center',
@@ -104,7 +103,7 @@ function App() {
         ) : (
           <GameOver score={resources.money} onRestart={handleRestart} />
         )}
-         <EducationCenter />
+         <EducationCenter onBuildEducationCenter={handleBuildEducationCenter} />
       </div>
     </ErrorBoundary>
   );
