@@ -5,6 +5,7 @@ import ResourcePanel from './components/ResourcePanel';
 import PollutionMeter from './components/PollutionMeter';
 import EcoActions from './components/EcoActions';
 import GameOver from './components/GameOver';
+import TechnologyTree from './components/TechnologyTree';
 import EducationCenter from './components/EducationCenter'; // Import the EducationCenter component
 
 function ErrorBoundary({ children }) {
@@ -37,7 +38,11 @@ function App() {
   const [pollutionLevel, setPollutionLevel] = useState(0);
   const [isGameOver, setGameOver] = useState(false);
   const [hasEducationCenter, setHasEducationCenter] = useState(false); // Track if the Education Center has been built
-
+  const [technologies, setTechnologies] = useState({
+    cleanerEnergy: false,
+    advancedWasteManagement: false,
+    innovativeTransportation: false,
+  }); 
   const ACTION_COST = 500;
   const POLLUTION_INCREASE = 10;
 
@@ -80,7 +85,30 @@ function App() {
     });
   };
   
-  
+  const handleResearch = (technology) => {
+    // Implement logic to research a technology
+    // Deduct research points, unlock technology, or perform other actions
+    const researchCost = getResearchCost(technology);
+
+    if (resources.researchPoints >= researchCost) {
+      setResources((prevResources) => ({
+        ...prevResources,
+        researchPoints: prevResources.researchPoints - researchCost,
+      }));
+
+      setTechnologies((prevTechnologies) => ({
+        ...prevTechnologies,
+        [technology]: true,
+      }));
+    }
+  };
+
+  const getResearchCost = (technology) => {
+    // You can implement a function to determine the research cost based on game balance
+    // For simplicity, let's assume a constant cost for each technology
+    return 100; // Adjust this value based on your game design
+  };
+
 
   const containerStyle = {
     textAlign: 'center',
@@ -105,6 +133,8 @@ function App() {
               onBuildEducationCenter={handleBuildEducationCenter}
             />
             <EcoActions onEcoAction={handleEcoAction} onBuildEducationCenter={handleBuildEducationCenter} />
+            <TechnologyTree technologies={technologies} onResearch={handleResearch} /> {/* Render the TechnologyTree component */}
+
           </>
         ) : (
           <GameOver score={resources.money} onRestart={handleRestart} />

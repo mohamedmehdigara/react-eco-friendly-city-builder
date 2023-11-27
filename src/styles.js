@@ -93,3 +93,27 @@ border-radius: 5px;
 export const RandomEventContainer = styled.div`
   /* Add your styles for RandomEventContainer */
 `;
+
+export const TechnologyTreeContainer = styled.div`
+  background-color: #e0e0e0;
+  padding: 20px;
+  margin: 10px;
+  border-radius: 5px;
+
+  h2 {
+    margin-bottom: 10px;
+  }
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+
+    li {
+      margin-bottom: 10px;
+
+      button {
+        cursor: pointer;
+      }
+    }
+  }
+`;
