@@ -71,10 +71,12 @@ function App() {
   };
 
   const handleBuildEducationCenter = () => {
+    console.log('Building Education Center...');
     // Implement logic to build the Education Center
     // Adjust resources, setHasEducationCenter, or perform other actions
     setHasEducationCenter(true);
   };
+  
 
   const containerStyle = {
     textAlign: 'center',
@@ -102,7 +104,7 @@ function App() {
         ) : (
           <GameOver score={resources.money} onRestart={handleRestart} />
         )}
-        {hasEducationCenter && <EducationCenter />} {/* Render EducationCenter if it has been built */}
+        {hasEducationCenter && <EducationCenter />}
       </div>
     </ErrorBoundary>
   );
