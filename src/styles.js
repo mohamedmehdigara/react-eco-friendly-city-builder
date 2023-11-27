@@ -80,3 +80,10 @@ export const UpgradeButton = styled.button`
   font-weight: bold;
   margin-top: 5px;
 `;
+
+export const EducationCenterContainer = styled.div`
+  background-color: #cce5ff;
+  padding: 20px;
+  margin: 10px;
+  border-radius: 5px;
+`;

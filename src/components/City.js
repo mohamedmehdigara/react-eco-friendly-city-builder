@@ -2,10 +2,12 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Building from './Building';
+import EducationCenter from './EducationCenter';
 import { CityContainer } from '../styles';
 
 const City = () => {
   const [buildings, setBuildings] = useState([]);
+  const [hasEducationCenter, setHasEducationCenter] = useState(false);
 
   const addBuilding = () => {
     const newBuilding = {
@@ -30,9 +32,17 @@ const City = () => {
     );
   };
 
+  const buildEducationCenter = () => {
+    setHasEducationCenter(true);
+    // Add logic for any bonuses or effects on eco-friendliness or resource production
+  };
+
   return (
     <CityContainer>
       <button onClick={addBuilding}>Build Eco-Friendly Building</button>
+      {hasEducationCenter ? (
+        <EducationCenter onBuildEducationCenter={buildEducationCenter} />
+      ) : null}
       <div>
         {buildings.map((building) => (
           <Building
