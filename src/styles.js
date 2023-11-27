@@ -88,3 +88,8 @@ margin: 10px;
 border-radius: 5px;
   
 `;
+
+
+export const RandomEventContainer = styled.div`
+  /* Add your styles for RandomEventContainer */
+`;
