@@ -31,9 +31,6 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
     );
   };
 
-  console.log('hasEducationCenter:', hasEducationCenter);
-
-
   return (
     <CityContainer>
       <button onClick={addBuilding}>Build Eco-Friendly Building</button>
@@ -47,8 +44,8 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
           />
         ))}
       </div>
-      {hasEducationCenter && <EducationCenter onBuildEducationCenter={onBuildEducationCenter} />} {/* Render EducationCenter if it has been built */}
-
+      {hasEducationCenter && <EducationCenter onBuildEducationCenter={onBuildEducationCenter} />}
+      {/* Render EducationCenter if it has been built */}
     </CityContainer>
   );
 };
