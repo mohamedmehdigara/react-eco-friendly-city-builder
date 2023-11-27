@@ -7,6 +7,7 @@ import EcoActions from './components/EcoActions';
 import GameOver from './components/GameOver';
 import TechnologyTree from './components/TechnologyTree';
 import EducationCenter from './components/EducationCenter'; // Import the EducationCenter component
+import CityExpansion from './components/CityExpansion';
 
 function ErrorBoundary({ children }) {
   const [hasError, setHasError] = useState(false);
@@ -43,6 +44,9 @@ function App() {
     advancedWasteManagement: false,
     innovativeTransportation: false,
   }); 
+
+  const [currentCityZone, setCurrentCityZone] = useState(1);
+
   const ACTION_COST = 500;
   const POLLUTION_INCREASE = 10;
 
@@ -109,6 +113,10 @@ function App() {
     return 100; // Adjust this value based on your game design
   };
 
+  const handleCityExpansion = () => {
+    // ... logic for city expansion
+  };
+
 
   const containerStyle = {
     textAlign: 'center',
@@ -134,6 +142,7 @@ function App() {
             />
             <EcoActions onEcoAction={handleEcoAction} onBuildEducationCenter={handleBuildEducationCenter} />
             <TechnologyTree technologies={technologies} onResearch={handleResearch} /> {/* Render the TechnologyTree component */}
+            <CityExpansion currentCityZone={currentCityZone} onCityExpansion={handleCityExpansion} />
 
           </>
         ) : (

@@ -117,3 +117,18 @@ export const TechnologyTreeContainer = styled.div`
     }
   }
 `;
+
+export const CityExpansionContainer = styled.div`
+  background-color: #ffd700;
+  padding: 20px;
+  margin: 10px;
+  border-radius: 5px;
+
+  h2 {
+    margin-bottom: 10px;
+  }
+
+  button {
+    cursor: pointer;
+  }
+`;
