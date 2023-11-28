@@ -6,9 +6,11 @@ import EducationCenter from './EducationCenter';
 import RandomEvent from './RandomEvent'; // Import the RandomEvent component
 import { CityContainer } from '../styles';
 
-const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter }) => {
+const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores }) => {
   const [buildings, setBuildings] = useState([]);
   const [randomEvent, setRandomEvent] = useState(null);
+  const [playerId] = useState(1); // Assuming a single player for simplicity
+
 
   const addBuilding = () => {
     const newBuilding = {
@@ -64,6 +66,10 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
     return buildingTypes[randomIndex];
   };
   
+  const handleGameOver = () => {
+    // Update scores when the game is over
+    updateScores(playerId, resources.money);
+  };
 
   return (
     <CityContainer>
@@ -90,6 +96,8 @@ City.propTypes = {
   setResources: PropTypes.func.isRequired,
   setPollutionLevel: PropTypes.func.isRequired,
   hasEducationCenter: PropTypes.bool.isRequired,
+  updateScores: PropTypes.func.isRequired, // Add updateScores to propTypes
+
 };
 
 export default City;

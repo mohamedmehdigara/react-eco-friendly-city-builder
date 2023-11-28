@@ -8,6 +8,7 @@ import GameOver from './components/GameOver';
 import TechnologyTree from './components/TechnologyTree';
 import EducationCenter from './components/EducationCenter'; // Import the EducationCenter component
 import CityExpansion from './components/CityExpansion';
+import Leaderboard from './components/Leaderboard';
 
 function ErrorBoundary({ children }) {
   const [hasError, setHasError] = useState(false);
@@ -46,6 +47,10 @@ function App() {
   }); 
 
   const [currentCityZone, setCurrentCityZone] = useState(1);
+  const [scores, setScores] = useState([
+    { id: 1, name: 'Player 1', score: 5000 },
+    { id: 2, name: 'Player 2', score: 4500 },
+  ]);
 
   const ACTION_COST = 500;
   const POLLUTION_INCREASE = 10;
@@ -119,6 +124,11 @@ function App() {
 
   };
 
+  const updateScores = (playerId, newScore) => {
+    setScores((prevScores) =>
+      prevScores.map((score) => (score.id === playerId ? { ...score, score: newScore } : score))
+    );
+  };
 
   const containerStyle = {
     textAlign: 'center',
@@ -149,7 +159,10 @@ function App() {
           </>
         ) : (
           <GameOver score={resources.money} onRestart={handleRestart} />
+
         )}
+              <Leaderboard scores={scores} />
+
          <EducationCenter onBuildEducationCenter={handleBuildEducationCenter} />
       </div>
     </ErrorBoundary>
