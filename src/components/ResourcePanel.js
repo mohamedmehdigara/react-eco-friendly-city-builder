@@ -1,6 +1,8 @@
+// ResourcePanel.js
 import React from 'react';
 import PropTypes from 'prop-types';
 import { ResourcePanelContainer } from '../styles';
+
 
 const ResourcePanel = ({ resources }) => {
   return (

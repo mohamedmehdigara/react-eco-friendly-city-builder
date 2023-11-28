@@ -1,3 +1,4 @@
+// PollutionMeter.js
 import React from 'react';
 import PropTypes from 'prop-types';
 import { PollutionMeterContainer } from '../styles';
@@ -27,7 +28,7 @@ const PollutionMeter = ({ pollutionLevel }) => {
     <PollutionMeterContainer>
       <h2>Pollution</h2>
       <p>Level: {pollutionLevel}</p>
-      <div className="progress-bar" style={{ width: `${pollutionLevel}%`, backgroundColor: getProgressBarColor() }} />
+      <div className={`progress-bar ${getProgressBarColor()}`} style={{ width: `${pollutionLevel}%` }} aria-live="assertive" aria-label={`Pollution Level: ${getPollutionStatus()}`} />
       <p>Status: {getPollutionStatus()}</p>
     </PollutionMeterContainer>
   );
