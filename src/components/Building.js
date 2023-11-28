@@ -8,7 +8,7 @@ const Building = ({ type, floors, color, ecoLevel, residents, onUpgrade }) => (
     {floors && <BuildingDetails>Floors: {floors}</BuildingDetails>}
     {residents && <BuildingDetails>Residents: {residents}</BuildingDetails>}
     <BuildingDetails>Eco Level: {ecoLevel}</BuildingDetails>
-    {ecoLevel < 5 && <UpgradeButton onClick={onUpgrade}>Upgrade</UpgradeButton>}
+    {renderUpgradeButton(ecoLevel, onUpgrade)}
   </BuildingContainer>
 );
 
@@ -27,5 +27,9 @@ Building.defaultProps = {
 };
 
 const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+
+const renderUpgradeButton = (ecoLevel, onUpgrade) => {
+  return ecoLevel < 5 && <UpgradeButton onClick={onUpgrade}>Upgrade</UpgradeButton>;
+};
 
 export default Building;

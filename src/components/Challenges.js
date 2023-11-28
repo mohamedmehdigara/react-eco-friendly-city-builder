@@ -5,10 +5,9 @@ const Challenges = ({ challenges }) => (
   <div>
     <h2>Challenges</h2>
     <ul>
-      {challenges.map((challenge) => (
-        // Extracting styles to a separate object for better readability
-        <li key={challenge.id} style={getListItemStyle(challenge.completed)}>
-          {challenge.description}
+      {challenges.map(({ id, description, completed }) => (
+        <li key={id} style={getListItemStyle(completed)}>
+          {description}
         </li>
       ))}
     </ul>
@@ -25,7 +24,6 @@ Challenges.propTypes = {
   ).isRequired,
 };
 
-// Function to determine the style based on the completed status
 const getListItemStyle = (completed) => ({
   textDecoration: completed ? 'line-through' : 'none',
   // Add more styles if needed
