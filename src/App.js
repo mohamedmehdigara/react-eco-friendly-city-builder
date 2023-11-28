@@ -52,6 +52,9 @@ function App() {
     { id: 2, name: 'Player 2', score: 4500 },
   ]);
 
+  const [weather, setWeather] = useState('sunny'); // Add weather state
+
+
   const ACTION_COST = 500;
   const POLLUTION_INCREASE = 10;
 

@@ -1,15 +1,16 @@
 // City.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Building from './Building';
 import EducationCenter from './EducationCenter';
 import RandomEvent from './RandomEvent'; // Import the RandomEvent component
 import { CityContainer } from '../styles';
 
-const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores }) => {
+const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores, weather }) => {
   const [buildings, setBuildings] = useState([]);
   const [randomEvent, setRandomEvent] = useState(null);
   const [playerId] = useState(1); // Assuming a single player for simplicity
+  const [ setWeather] = useState('sunny'); // Add weather state
 
 
   const addBuilding = () => {
@@ -70,6 +71,45 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
     // Update scores when the game is over
     updateScores(playerId, resources.money);
   };
+
+  const handleWeatherImpact = () => {
+    // Adjust resource production and pollution based on the weather
+    if (weather === 'sunny') {
+      setResources((prevResources) => ({
+        ...prevResources,
+        energy: prevResources.energy + 10, // Boost energy production on sunny days
+      }));
+      setPollutionLevel((prevLevel) => prevLevel - 5); // Reduce pollution on sunny days
+    } else if (weather === 'rainy') {
+      setResources((prevResources) => ({
+        ...prevResources,
+        energy: prevResources.energy - 5, // Reduce energy production on rainy days
+      }));
+      setPollutionLevel((prevLevel) => prevLevel + 5); // Increase pollution on rainy days
+    }
+    // Add more conditions for other weather states
+  };
+
+  useEffect(() => {
+    // Handle weather impact whenever weather changes
+    handleWeatherImpact();
+  }, [weather]);
+
+  const handleRandomWeatherEvent = () => {
+    const weatherOptions = ['sunny', 'rainy', 'cloudy'];
+    const randomWeather = weatherOptions[Math.floor(Math.random() * weatherOptions.length)];
+    setWeather(randomWeather);
+  };
+
+  useEffect(() => {
+    // Trigger random weather events periodically (adjust the timing based on your preference)
+    const interval = setInterval(() => {
+      handleRandomWeatherEvent();
+    }, 60000); // Change weather every minute (adjust as needed)
+
+    return () => clearInterval(interval);
+  }, []);
+
 
   return (
     <CityContainer>
