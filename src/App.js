@@ -115,6 +115,8 @@ function App() {
 
   const handleCityExpansion = () => {
     // ... logic for city expansion
+    setCurrentCityZone((prevCityZone) => prevCityZone + 1);
+
   };
 
 
