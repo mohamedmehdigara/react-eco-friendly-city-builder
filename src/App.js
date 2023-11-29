@@ -40,6 +40,20 @@ function App() {
   const [pollutionLevel, setPollutionLevel] = useState(0);
   const [isGameOver, setGameOver] = useState(false);
   const [hasEducationCenter, setHasEducationCenter] = useState(false); // Track if the Education Center has been built
+  const [educationCenterUpgrades, setEducationCenterUpgrades] = useState({courses: [
+    { id: 1, name: 'Advanced Environmental Science', level: 1 },
+    // Add more courses as needed
+  ],
+  workshops: [
+    { id: 1, name: 'Sustainable Architecture Workshop', level: 1 },
+    // Add more workshops as needed
+  ],
+  researchProjects: [
+    { id: 1, name: 'Renewable Energy Innovation', level: 1 },
+    // Add more research projects as needed
+  ],
+});
+
   const [technologies, setTechnologies] = useState({
     cleanerEnergy: false,
     advancedWasteManagement: false,
@@ -96,8 +110,20 @@ function App() {
       return newHasEducationCenter;
     });
   };
+
+  const handleUpgrade = (type, itemId) => {
+    setEducationCenterUpgrades((prevUpgrades) => {
+      const updatedUpgrades = { ...prevUpgrades };
+      const upgradeType = updatedUpgrades[type];
+      const index = upgradeType.findIndex((item) => item.id === itemId);
+      if (index !== -1) {
+        upgradeType[index].level += 1;
+      }
+      return updatedUpgrades;
+    });
+  };
   
-  const handleResearch = (technology) => {
+  const handleResearch = (technology, itemId) => {
     // Implement logic to research a technology
     // Deduct research points, unlock technology, or perform other actions
     const researchCost = getResearchCost(technology);
@@ -112,6 +138,19 @@ function App() {
         ...prevTechnologies,
         [technology]: true,
       }));
+
+      setEducationCenterUpgrades((prevUpgrades) => {
+        const updatedUpgrades = { ...prevUpgrades };
+        const researchIndex = updatedUpgrades.researchProjects.findIndex((project) => project.id === itemId);
+        if (researchIndex !== -1) {
+          // Implement logic to handle research completion and unlock new technologies
+          // For example, update the city's available technologies state
+          // setAvailableTechnologies((prevTechnologies) => [...prevTechnologies, newTechnology]);
+          // You can also update resources or other game mechanics
+        }
+        return updatedUpgrades;
+      
+      });
     }
   };
 
@@ -166,7 +205,13 @@ function App() {
         )}
               <Leaderboard scores={scores} />
 
-         <EducationCenter onBuildEducationCenter={handleBuildEducationCenter} />
+         <EducationCenter 
+          onBuildEducationCenter={handleBuildEducationCenter}
+          onUpgrade={handleUpgrade}
+          onResearch={handleResearch}
+          courses={educationCenterUpgrades.courses}
+          workshops={educationCenterUpgrades.workshops}
+          researchProjects={educationCenterUpgrades.researchProjects}/>
       </div>
     </ErrorBoundary>
   );
