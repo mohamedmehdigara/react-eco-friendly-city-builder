@@ -5,6 +5,7 @@ import Building from './Building';
 import EducationCenter from './EducationCenter';
 import RandomEvent from './RandomEvent';
 import { CityContainer } from '../styles';
+import CitizenInfo from './CitizenInfo';
 
 const City = ({
   resources,
@@ -14,6 +15,7 @@ const City = ({
   onBuildEducationCenter,
   updateScores,
   weather,
+  citizens
 }) => {
   const [buildings, setBuildings] = useState([]);
   const [randomEvent, setRandomEvent] = useState(null);
@@ -123,6 +125,9 @@ const City = ({
       </div>
       {hasEducationCenter && <EducationCenter onBuildEducationCenter={onBuildEducationCenter} />}
       {randomEvent && <RandomEvent event={randomEvent} onClose={() => setRandomEvent(null)} />}
+      {citizens && citizens.map((citizen) => (
+            <CitizenInfo key={citizen.id} citizen={citizen} />
+          ))}
     </CityContainer>
   );
 };
@@ -134,6 +139,8 @@ City.propTypes = {
   hasEducationCenter: PropTypes.bool.isRequired,
   updateScores: PropTypes.func.isRequired,
   weather: PropTypes.string.isRequired,
+  citizens: PropTypes.array.isRequired, // Add prop type for citizens
+
 };
 
 export default City;
