@@ -4,14 +4,15 @@ import PropTypes from 'prop-types';
 import Building from './Building';
 import EducationCenter from './EducationCenter';
 import RandomEvent from './RandomEvent';
-import CityExpansion from './CityExpansion'; // Import the CityExpansion component
+import CityExpansion from './CityExpansion';
+import CitizenInfo from './CitizenInfo'; // Import the CitizenInfo component
 import { CityContainer } from '../styles';
 
 const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores, weather, citizens, setCitizens }) => {
   const [buildings, setBuildings] = useState([]);
   const [randomEvent, setRandomEvent] = useState(null);
   const [playerId] = useState(1);
-  const [cityZone, setCityZone] = useState(1); // Initialize with the default city zone
+  const [cityZone, setCityZone] = useState(1);
   const [setWeather] = useState('sunny');
 
   const addBuilding = () => {
@@ -114,6 +115,7 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
       {hasEducationCenter && <EducationCenter onBuildEducationCenter={onBuildEducationCenter} onUpgrade={upgradeBuilding} />}
       {randomEvent && <RandomEvent event={randomEvent} onClose={handleCloseRandomEvent} />}
       <CityExpansion currentCityZone={cityZone} onCityExpansion={handleCityExpansion} />
+      <CitizenInfo citizens={citizens} />
     </CityContainer>
   );
 };
