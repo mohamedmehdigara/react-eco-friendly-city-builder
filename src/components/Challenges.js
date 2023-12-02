@@ -1,18 +1,29 @@
+// Challenges.js
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Challenges = ({ challenges }) => (
-  <div>
-    <h2>Challenges</h2>
-    <ul>
-      {challenges.map(({ id, description, completed }) => (
-        <li key={id} style={getListItemStyle(completed)}>
-          {description}
-        </li>
-      ))}
-    </ul>
-  </div>
-);
+const Challenges = ({ challenges, onToggleChallenge }) => {
+  const handleToggleChallenge = (id) => {
+    // Implement logic to toggle the completion status of the challenge
+    onToggleChallenge(id);
+  };
+
+  return (
+    <div>
+      <h2>Challenges</h2>
+      <ul>
+        {challenges.map(({ id, description, completed }) => (
+          <li key={id} style={getListItemStyle(completed)}>
+            {description}
+            <button onClick={() => handleToggleChallenge(id)}>
+              {completed ? 'Undo' : 'Complete'}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
 Challenges.propTypes = {
   challenges: PropTypes.arrayOf(
@@ -22,6 +33,7 @@ Challenges.propTypes = {
       completed: PropTypes.bool.isRequired,
     })
   ).isRequired,
+  onToggleChallenge: PropTypes.func.isRequired,
 };
 
 const getListItemStyle = (completed) => ({

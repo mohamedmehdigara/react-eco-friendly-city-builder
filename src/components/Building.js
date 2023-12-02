@@ -1,16 +1,25 @@
+// Building.js
 import React from 'react';
 import PropTypes from 'prop-types';
 import { BuildingContainer, BuildingDetails, UpgradeButton } from '../styles';
 
-const Building = ({ type, floors, color, ecoLevel, residents, onUpgrade }) => (
-  <BuildingContainer type={type} color={color}>
-    <p>{capitalizeFirstLetter(type)} Building</p>
-    {floors && <BuildingDetails>Floors: {floors}</BuildingDetails>}
-    {residents && <BuildingDetails>Residents: {residents}</BuildingDetails>}
-    <BuildingDetails>Eco Level: {ecoLevel}</BuildingDetails>
-    {renderUpgradeButton(ecoLevel, onUpgrade)}
-  </BuildingContainer>
-);
+const Building = ({ type, floors, color, ecoLevel, residents, onUpgrade, onInfo }) => {
+  const handleInfo = () => {
+    // Implement logic to display detailed information about the building
+    onInfo({ type, floors, color, ecoLevel, residents });
+  };
+
+  return (
+    <BuildingContainer type={type} color={color}>
+      <p>{capitalizeFirstLetter(type)} Building</p>
+      {floors && <BuildingDetails>Floors: {floors}</BuildingDetails>}
+      {residents && <BuildingDetails>Residents: {residents}</BuildingDetails>}
+      <BuildingDetails>Eco Level: {ecoLevel}</BuildingDetails>
+      {renderUpgradeButton(ecoLevel, onUpgrade)}
+      <button onClick={handleInfo}>Building Info</button>
+    </BuildingContainer>
+  );
+};
 
 Building.propTypes = {
   type: PropTypes.string.isRequired,
@@ -19,6 +28,7 @@ Building.propTypes = {
   ecoLevel: PropTypes.number.isRequired,
   residents: PropTypes.number,
   onUpgrade: PropTypes.func.isRequired,
+  onInfo: PropTypes.func.isRequired,
 };
 
 Building.defaultProps = {

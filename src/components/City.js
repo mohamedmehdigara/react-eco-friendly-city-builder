@@ -4,23 +4,15 @@ import PropTypes from 'prop-types';
 import Building from './Building';
 import EducationCenter from './EducationCenter';
 import RandomEvent from './RandomEvent';
+import CityExpansion from './CityExpansion'; // Import the CityExpansion component
 import { CityContainer } from '../styles';
-import CitizenInfo from './CitizenInfo';
 
-const City = ({
-  resources,
-  setResources,
-  setPollutionLevel,
-  hasEducationCenter,
-  onBuildEducationCenter,
-  updateScores,
-  weather,
-  citizens
-}) => {
+const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores, weather, citizens, setCitizens }) => {
   const [buildings, setBuildings] = useState([]);
   const [randomEvent, setRandomEvent] = useState(null);
   const [playerId] = useState(1);
-  const [currentWeather, setWeather] = useState('sunny'); // Rename setWeather for consistency
+  const [cityZone, setCityZone] = useState(1); // Initialize with the default city zone
+  const [setWeather] = useState('sunny');
 
   const addBuilding = () => {
     const newBuilding = {
@@ -39,26 +31,19 @@ const City = ({
     );
   };
 
-  // ... Other functions (generateRandomBuildingType, handleRandomEvent, handlePollutionIncrease, etc.)
-
   const handleRandomEvent = () => {
-    // Define different types of random events
     const events = [
       { description: 'Sudden increase in pollution!', impact: 'negative', action: handlePollutionIncrease },
       { description: 'Grant for renewable energy projects!', impact: 'positive', action: handleGrantForRenewableEnergy },
-      // Add more events as needed
     ];
-
-    // Randomly select an event
     const selectedEvent = events[Math.floor(Math.random() * events.length)];
 
-    // Trigger the event
     setRandomEvent(selectedEvent);
     selectedEvent.action();
   };
 
   const handlePollutionIncrease = () => {
-    setPollutionLevel((prevLevel) => prevLevel + 20); // Adjust the pollution level based on your game mechanics
+    setPollutionLevel((prevLevel) => prevLevel + 20);
   };
 
   const handleGrantForRenewableEnergy = () => {
@@ -74,26 +59,30 @@ const City = ({
     const randomIndex = Math.floor(Math.random() * buildingTypes.length);
     return buildingTypes[randomIndex];
   };
-  
+
   const handleGameOver = () => {
-    // Update scores when the game is over
     updateScores(playerId, resources.money);
   };
 
   const handleWeatherImpact = () => {
-    if (currentWeather === 'sunny') {
-      setResources((prevResources) => ({ ...prevResources, energy: prevResources.energy + 10 }));
+    if (weather === 'sunny') {
+      setResources((prevResources) => ({
+        ...prevResources,
+        energy: prevResources.energy + 10,
+      }));
       setPollutionLevel((prevLevel) => prevLevel - 5);
-    } else if (currentWeather === 'rainy') {
-      setResources((prevResources) => ({ ...prevResources, energy: prevResources.energy - 5 }));
+    } else if (weather === 'rainy') {
+      setResources((prevResources) => ({
+        ...prevResources,
+        energy: prevResources.energy - 5,
+      }));
       setPollutionLevel((prevLevel) => prevLevel + 5);
     }
-    // Add more conditions for other weather states
   };
 
   useEffect(() => {
     handleWeatherImpact();
-  }, [currentWeather]);
+  }, [weather]);
 
   const handleRandomWeatherEvent = () => {
     const weatherOptions = ['sunny', 'rainy', 'cloudy'];
@@ -109,25 +98,22 @@ const City = ({
     return () => clearInterval(interval);
   }, []);
 
+  const handleCityExpansion = () => {
+    setCityZone((prevZone) => prevZone + 1);
+  };
+
   return (
     <CityContainer>
       <button onClick={addBuilding}>Build Eco-Friendly Building</button>
       <button onClick={handleRandomEvent}>Trigger Random Event</button>
       <div>
         {buildings.map((building) => (
-          <Building
-            key={building.id}
-            type={building.type}
-            ecoLevel={building.ecoLevel}
-            onUpgrade={() => upgradeBuilding(building.id)}
-          />
+          <Building key={building.id} type={building.type} ecoLevel={building.ecoLevel} onUpgrade={() => upgradeBuilding(building.id)} />
         ))}
       </div>
-      {hasEducationCenter && <EducationCenter onBuildEducationCenter={onBuildEducationCenter} />}
-      {randomEvent && <RandomEvent event={randomEvent} onClose={() => setRandomEvent(null)} />}
-      {citizens && citizens.map((citizen) => (
-            <CitizenInfo key={citizen.id} citizen={citizen} />
-          ))}
+      {hasEducationCenter && <EducationCenter onBuildEducationCenter={onBuildEducationCenter} onUpgrade={upgradeBuilding} />}
+      {randomEvent && <RandomEvent event={randomEvent} onClose={handleCloseRandomEvent} />}
+      <CityExpansion currentCityZone={cityZone} onCityExpansion={handleCityExpansion} />
     </CityContainer>
   );
 };
@@ -139,8 +125,8 @@ City.propTypes = {
   hasEducationCenter: PropTypes.bool.isRequired,
   updateScores: PropTypes.func.isRequired,
   weather: PropTypes.string.isRequired,
-  citizens: PropTypes.array.isRequired, // Add prop type for citizens
-
+  citizens: PropTypes.array.isRequired,
+  setCitizens: PropTypes.func.isRequired,
 };
 
 export default City;
