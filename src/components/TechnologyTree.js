@@ -8,29 +8,36 @@ const TechnologyTree = ({ technologies, onResearch }) => (
     <h2>Technology Tree</h2>
     <ul>
       <li>
-        Cleaner Energy
+        <strong>Cleaner Energy</strong>
         {!technologies.cleanerEnergy && (
           <button onClick={() => onResearch('cleanerEnergy')}>Research</button>
         )}
-        {technologies.cleanerEnergy && <span className="technology-status">Researched</span>}
+        {technologies.cleanerEnergy && (
+          <span className="technology-status">Researched - Cleaner energy sources are available.</span>
+        )}
         {/* Add a description or additional information */}
       </li>
       <li>
-        Advanced Waste Management
+        <strong>Advanced Waste Management</strong>
         {!technologies.advancedWasteManagement && (
           <button onClick={() => onResearch('advancedWasteManagement')}>Research</button>
         )}
-        {technologies.advancedWasteManagement && <span className="technology-status">Researched</span>}
+        {technologies.advancedWasteManagement && (
+          <span className="technology-status">Researched - Improved waste management implemented.</span>
+        )}
         {/* Add a description or additional information */}
       </li>
       <li>
-        Innovative Transportation
+        <strong>Innovative Transportation</strong>
         {!technologies.innovativeTransportation && (
           <button onClick={() => onResearch('innovativeTransportation')}>Research</button>
         )}
-        {technologies.innovativeTransportation && <span className="technology-status">Researched</span>}
+        {technologies.innovativeTransportation && (
+          <span className="technology-status">Researched - Modern transportation methods adopted.</span>
+        )}
         {/* Add a description or additional information */}
       </li>
+      {/* Add more technologies as needed */}
     </ul>
   </TechnologyTreeContainer>
 );

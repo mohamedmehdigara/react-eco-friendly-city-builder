@@ -28,7 +28,12 @@ const PollutionMeter = ({ pollutionLevel }) => {
     <PollutionMeterContainer>
       <h2>Pollution</h2>
       <p>Level: {pollutionLevel}</p>
-      <div className={`progress-bar ${getProgressBarColor()}`} style={{ width: `${pollutionLevel}%` }} aria-live="assertive" aria-label={`Pollution Level: ${getPollutionStatus()}`} />
+      <div
+        className={`progress-bar ${getProgressBarColor()}`}
+        style={{ width: `${pollutionLevel}%` }}
+        aria-live="assertive"
+        aria-label={`Pollution Level: ${getPollutionStatus()}`}
+      />
       <p>Status: {getPollutionStatus()}</p>
     </PollutionMeterContainer>
   );

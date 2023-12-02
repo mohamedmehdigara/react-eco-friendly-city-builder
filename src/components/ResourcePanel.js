@@ -1,8 +1,8 @@
 // ResourcePanel.js
+// ResourcePanel.js
 import React from 'react';
 import PropTypes from 'prop-types';
 import { ResourcePanelContainer } from '../styles';
-
 
 const ResourcePanel = ({ resources }) => {
   return (
@@ -17,6 +17,15 @@ const ResourcePanel = ({ resources }) => {
         <span className="resource-value">{resources.energy} kW</span>
       </div>
       {/* Add more resource types as needed */}
+      <div className="resource-item">
+        <span className="resource-label">Water:</span>
+        <span className="resource-value">{resources.water} gallons</span>
+      </div>
+      <div className="resource-item">
+        <span className="resource-label">Materials:</span>
+        <span className="resource-value">{resources.materials} units</span>
+      </div>
+      {/* Add more resource types as needed */}
     </ResourcePanelContainer>
   );
 };
@@ -25,6 +34,9 @@ ResourcePanel.propTypes = {
   resources: PropTypes.shape({
     money: PropTypes.number.isRequired,
     energy: PropTypes.number.isRequired,
+    // Add more resource types as needed
+    water: PropTypes.number.isRequired,
+    materials: PropTypes.number.isRequired,
     // Add more resource types as needed
   }).isRequired,
 };
