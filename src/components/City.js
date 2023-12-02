@@ -127,6 +127,8 @@ City.propTypes = {
   hasEducationCenter: PropTypes.bool.isRequired,
   updateScores: PropTypes.func.isRequired,
   weather: PropTypes.string.isRequired,
+  setWeather: PropTypes.func.isRequired,
+
   citizens: PropTypes.array.isRequired,
   setCitizens: PropTypes.func.isRequired,
 };
