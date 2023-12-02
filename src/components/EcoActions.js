@@ -1,3 +1,4 @@
+// EcoActions.js
 import React from 'react';
 import { EcoActionsContainer } from '../styles';
 
@@ -16,6 +17,19 @@ const EcoActions = ({ onEcoAction }) => (
       </span>{' '}
       Use Renewable Energy
     </button>
+    <button onClick={() => onEcoAction('recycle')}>
+      <span role="img" aria-label="Recycle">
+        ♻️
+      </span>{' '}
+      Recycle
+    </button>
+    <button onClick={() => onEcoAction('reduceWaste')}>
+      <span role="img" aria-label="Waste">
+        🗑️
+      </span>{' '}
+      Reduce Waste
+    </button>
+    {/* Add more eco-friendly actions as needed */}
   </EcoActionsContainer>
 );
 
