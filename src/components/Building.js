@@ -1,12 +1,14 @@
 // Building.js
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { BuildingContainer, BuildingDetails, UpgradeButton } from '../styles';
 
 const Building = ({ type, floors, color, ecoLevel, residents, onUpgrade, onInfo }) => {
+  const [showInfo, setShowInfo] = useState(false);
+
   const handleInfo = () => {
-    // Implement logic to display detailed information about the building
-    onInfo({ type, floors, color, ecoLevel, residents });
+    // Toggle the showInfo state to display/hide building information
+    setShowInfo(!showInfo);
   };
 
   return (
@@ -16,7 +18,14 @@ const Building = ({ type, floors, color, ecoLevel, residents, onUpgrade, onInfo 
       {residents && <BuildingDetails>Residents: {residents}</BuildingDetails>}
       <BuildingDetails>Eco Level: {ecoLevel}</BuildingDetails>
       {renderUpgradeButton(ecoLevel, onUpgrade)}
-      <button onClick={handleInfo}>Building Info</button>
+      <button onClick={handleInfo}>Toggle Info</button>
+      {showInfo && (
+        <div>
+          {/* Additional building information */}
+          <p>Additional Information:</p>
+          {/* Add more details as needed */}
+        </div>
+      )}
     </BuildingContainer>
   );
 };
