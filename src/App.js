@@ -112,6 +112,25 @@ function App() {
   };
 
   const handleUpgrade = (type, itemId) => {
+    // Modify your upgrade function to handle the undefined cas 
+  // Get the appropriate array based on the type
+  const targetArray = type === 'course' ? courses : type === 'workshop' ? workshops : researchProjects;
+
+  // Check if the array is defined before using findIndex
+  if (targetArray) {
+    const index = targetArray.findIndex((item) => item.id === itemId);
+
+    if (index !== -1) {
+      // Implement your upgrade logic using the index
+      // ...
+    } else {
+      console.error(`Item with id ${itemId} not found in the array`);
+    }
+  } else {
+    console.error('Target array is undefined');
+  }
+
+
     setEducationCenterUpgrades((prevUpgrades) => {
       const updatedUpgrades = { ...prevUpgrades };
       const upgradeType = updatedUpgrades[type];
@@ -122,7 +141,7 @@ function App() {
       return updatedUpgrades;
     });
   };
-  
+}
   const handleResearch = (technology, itemId) => {
     // Implement logic to research a technology
     // Deduct research points, unlock technology, or perform other actions
@@ -215,6 +234,6 @@ function App() {
       </div>
     </ErrorBoundary>
   );
-}
+
 
 export default App;
