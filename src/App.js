@@ -67,6 +67,10 @@ function App() {
   ]);
 
   const [weather, setWeather] = useState('sunny'); // Add weather state
+  const courses = []; // Define your courses array
+  const workshops = []; // Define your workshops array
+  const researchProjects = []; // Define your researchProjects array
+
 
 
   const ACTION_COST = 500;
@@ -141,7 +145,7 @@ function App() {
       return updatedUpgrades;
     });
   };
-}
+
   const handleResearch = (technology, itemId) => {
     // Implement logic to research a technology
     // Deduct research points, unlock technology, or perform other actions
@@ -205,35 +209,35 @@ function App() {
         <PollutionMeter pollutionLevel={pollutionLevel} />
         {!isGameOver ? (
           <>
-            <City
-              onGameOver={handleGameOver}
-              resources={resources}
-              setResources={setResources}
-              setPollutionLevel={setPollutionLevel}
-              hasEducationCenter={hasEducationCenter}
-              onBuildEducationCenter={handleBuildEducationCenter}
-            />
-            <EcoActions onEcoAction={handleEcoAction} onBuildEducationCenter={handleBuildEducationCenter} />
-            <TechnologyTree technologies={technologies} onResearch={handleResearch} /> {/* Render the TechnologyTree component */}
-            <CityExpansion currentCityZone={currentCityZone} onCityExpansion={handleCityExpansion} />
-
+            <div>
+              <City
+                onGameOver={handleGameOver}
+                resources={resources}
+                setResources={setResources}
+                setPollutionLevel={setPollutionLevel}
+                hasEducationCenter={hasEducationCenter}
+                onBuildEducationCenter={handleBuildEducationCenter}
+              />
+              <EcoActions onEcoAction={handleEcoAction} onBuildEducationCenter={handleBuildEducationCenter} />
+              <TechnologyTree technologies={technologies} onResearch={handleResearch} /> {/* Render the TechnologyTree component */}
+              <CityExpansion currentCityZone={currentCityZone} onCityExpansion={handleCityExpansion} />
+            </div>
           </>
         ) : (
           <GameOver score={resources.money} onRestart={handleRestart} />
-
         )}
-              <Leaderboard scores={scores} />
-
-         <EducationCenter 
+        <Leaderboard scores={scores} />
+        <EducationCenter
           onBuildEducationCenter={handleBuildEducationCenter}
           onUpgrade={handleUpgrade}
           onResearch={handleResearch}
           courses={educationCenterUpgrades.courses}
           workshops={educationCenterUpgrades.workshops}
-          researchProjects={educationCenterUpgrades.researchProjects}/>
+          researchProjects={educationCenterUpgrades.researchProjects}
+        />
       </div>
     </ErrorBoundary>
   );
-
+        }
 
 export default App;
