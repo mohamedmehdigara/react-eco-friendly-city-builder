@@ -1,11 +1,13 @@
-// EducationCenter.js
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { EducationCenterContainer } from '../styles';
 
 const EducationCenter = ({ onBuildEducationCenter, onUpgrade, onResearch, courses, workshops, researchProjects, setCitizens, citizens }) => {
+  const [newCourse, setNewCourse] = useState('');
+  const [newWorkshop, setNewWorkshop] = useState('');
+  const [newResearchProject, setNewResearchProject] = useState('');
+
   const handleAdoptPractice = (practice) => {
-    // Implement logic to update citizen awareness, adopted practices, and preferences
     setCitizens((prevCitizens) =>
       prevCitizens.map((citizen) => ({
         ...citizen,
@@ -17,8 +19,6 @@ const EducationCenter = ({ onBuildEducationCenter, onUpgrade, onResearch, course
   };
 
   const updatePreferences = (preferences, practice) => {
-    // Implement logic to update preferences based on the adopted practice
-    // You can adjust this logic based on your game mechanics
     return {
       ...preferences,
       environmentalPolicy: adjustPolicyPreference(preferences.environmentalPolicy, practice),
@@ -26,17 +26,48 @@ const EducationCenter = ({ onBuildEducationCenter, onUpgrade, onResearch, course
   };
 
   const adjustPolicyPreference = (currentPolicy, practice) => {
-    // Implement logic to adjust policy preference based on the adopted practice
-    // You can consider the type of practice and its impact on policy preference
-    // For example, adopting a renewable energy practice may make citizens more supportive
-    // of environmental policies.
     return currentPolicy;
+  };
+
+  const handleNewCourse = () => {
+    // Add the new course to the courses list
+    // You may want to add more logic to handle duplicate names or other constraints
+    onUpgrade({ type: 'course', name: newCourse });
+    setNewCourse('');
+  };
+
+  const handleNewWorkshop = () => {
+    // Add the new workshop to the workshops list
+    onUpgrade({ type: 'workshop', name: newWorkshop });
+    setNewWorkshop('');
+  };
+
+  const handleNewResearchProject = () => {
+    // Add the new research project to the research projects list
+    onUpgrade({ type: 'research', name: newResearchProject });
+    setNewResearchProject('');
   };
 
   return (
     <EducationCenterContainer>
       <h2>Education Center</h2>
       <button onClick={onBuildEducationCenter}>Build Education Center</button>
+
+      {/* Input fields for adding new courses, workshops, and research projects */}
+      <div>
+        <input type="text" placeholder="New Course" value={newCourse} onChange={(e) => setNewCourse(e.target.value)} />
+        <button onClick={handleNewCourse}>Add Course</button>
+      </div>
+
+      <div>
+        <input type="text" placeholder="New Workshop" value={newWorkshop} onChange={(e) => setNewWorkshop(e.target.value)} />
+        <button onClick={handleNewWorkshop}>Add Workshop</button>
+      </div>
+
+      <div>
+        <input type="text" placeholder="New Research Project" value={newResearchProject} onChange={(e) => setNewResearchProject(e.target.value)} />
+        <button onClick={handleNewResearchProject}>Add Research Project</button>
+      </div>
 
       {/* Display available courses */}
       <h3>Available Courses</h3>
@@ -76,6 +107,7 @@ const EducationCenter = ({ onBuildEducationCenter, onUpgrade, onResearch, course
           <p>Awareness Level: {citizen.awarenessLevel}</p>
           <p>Adopted Practices: {citizen.adoptedPractices.join(', ')}</p>
           <p>Environmental Policy Preference: {citizen.preferences.environmentalPolicy}</p>
+          <button onClick={() => handleAdoptPractice('someNewPractice')}>Adopt Practice</button>
         </div>
       ))}
     </EducationCenterContainer>

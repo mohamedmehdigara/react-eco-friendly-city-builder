@@ -1,4 +1,3 @@
-// CityExpansion.js
 import React from 'react';
 import PropTypes from 'prop-types';
 import { CityExpansionContainer } from '../styles';
@@ -20,6 +19,39 @@ const CityExpansion = ({ currentCityZone, onCityExpansion }) => (
       )}
     </p>
     <button onClick={onCityExpansion}>Expand City</button>
+
+    {/* Additional options for city expansion based on the current zone */}
+    {currentCityZone === 1 && (
+      <div>
+        <h3>Expansion Options</h3>
+        <ul>
+          <li>Build new residential areas</li>
+          <li>Construct basic eco-friendly facilities</li>
+        </ul>
+      </div>
+    )}
+
+    {currentCityZone === 2 && (
+      <div>
+        <h3>Advanced Expansion</h3>
+        <p>As your city grows, you can consider the following:</p>
+        <ul>
+          <li>Introduce renewable energy sources</li>
+          <li>Establish eco-friendly transportation systems</li>
+        </ul>
+      </div>
+    )}
+
+    {currentCityZone === 3 && (
+      <div>
+        <h3>Metropolis Development</h3>
+        <p>Your metropolis is ready for major developments:</p>
+        <ul>
+          <li>Research and implement cutting-edge technologies</li>
+          <li>Enhance city infrastructure for maximum sustainability</li>
+        </ul>
+      </div>
+    )}
   </CityExpansionContainer>
 );
 
