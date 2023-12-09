@@ -202,17 +202,13 @@ function App() {
   };
 
   const generateRandomWeather = () => {
-    // Your logic to generate random weather
     const weatherOptions = ['Sunny', 'Cloudy', 'Rainy'];
     const randomIndex = Math.floor(Math.random() * weatherOptions.length);
     return weatherOptions[randomIndex];
   };
-  
 
   const handleRandomWeatherEvent = () => {
-    // Your logic to handle random weather event
-    // Make sure to use setWeather properly
-    const newWeather = generateRandomWeather(); // Replace with your logic
+    const newWeather = generateRandomWeather();
     setWeather(newWeather);
   };
 
