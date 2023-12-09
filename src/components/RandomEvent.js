@@ -1,7 +1,6 @@
-// RandomEvent.js
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 
 const fadeIn = keyframes`
   from {
@@ -12,6 +11,15 @@ const fadeIn = keyframes`
   }
 `;
 
+const fadeOut = keyframes`
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+`;
+
 const RandomEventContainer = styled.div`
   opacity: 0;
   animation: ${fadeIn} 0.5s ease-in-out;
@@ -19,27 +27,40 @@ const RandomEventContainer = styled.div`
   &.fade-in {
     opacity: 1;
   }
+
+  ${({ isPositive }) =>
+    isPositive &&
+    css`
+      background-color: #b9e8b9; /* Light green for positive events */
+    `}
+
+  ${({ isNegative }) =>
+    isNegative &&
+    css`
+      background-color: #f8d7da; /* Light red for negative events */
+    `}
 `;
 
 const RandomEvent = ({ event, onClose }) => {
   useEffect(() => {
-    // Fade-in animation when the component mounts
     const eventContainer = document.querySelector('.random-event-container');
     if (eventContainer) {
       eventContainer.classList.add('fade-in');
     }
 
     return () => {
-      // Cleanup or add exit animations if needed
-      // For simplicity, I'm just removing the fade-in class here
       if (eventContainer) {
         eventContainer.classList.remove('fade-in');
+        eventContainer.classList.add('fade-out');
       }
     };
   }, []);
 
+  const isPositiveEvent = event.impact === 'positive';
+  const isNegativeEvent = event.impact === 'negative';
+
   return (
-    <RandomEventContainer className="random-event-container">
+    <RandomEventContainer className="random-event-container" isPositive={isPositiveEvent} isNegative={isNegativeEvent}>
       <h2>Random Event</h2>
       <p>{event.description}</p>
       <button onClick={onClose}>Close</button>
@@ -50,6 +71,7 @@ const RandomEvent = ({ event, onClose }) => {
 RandomEvent.propTypes = {
   event: PropTypes.shape({
     description: PropTypes.string.isRequired,
+    impact: PropTypes.oneOf(['positive', 'negative']).isRequired,
   }).isRequired,
   onClose: PropTypes.func.isRequired,
 };

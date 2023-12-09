@@ -37,6 +37,26 @@ const TechnologyTree = ({ technologies, onResearch }) => (
         )}
         {/* Add a description or additional information */}
       </li>
+      <li>
+        <strong>Sustainable Agriculture</strong>
+        {!technologies.sustainableAgriculture && (
+          <button onClick={() => onResearch('sustainableAgriculture')}>Research</button>
+        )}
+        {technologies.sustainableAgriculture && (
+          <span className="technology-status">Researched - Sustainable farming practices implemented.</span>
+        )}
+        {/* Add a description or additional information */}
+      </li>
+      <li>
+        <strong>Renewable Materials</strong>
+        {!technologies.renewableMaterials && (
+          <button onClick={() => onResearch('renewableMaterials')}>Research</button>
+        )}
+        {technologies.renewableMaterials && (
+          <span className="technology-status">Researched - Use of renewable materials in construction.</span>
+        )}
+        {/* Add a description or additional information */}
+      </li>
       {/* Add more technologies as needed */}
     </ul>
   </TechnologyTreeContainer>
