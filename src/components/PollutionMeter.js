@@ -1,9 +1,8 @@
-// PollutionMeter.js
 import React from 'react';
 import PropTypes from 'prop-types';
 import { PollutionMeterContainer } from '../styles';
 
-const PollutionMeter = ({ pollutionLevel }) => {
+const PollutionMeter = ({ pollutionLevel, onReducePollution }) => {
   const getPollutionStatus = () => {
     if (pollutionLevel < 30) {
       return 'Low';
@@ -24,6 +23,11 @@ const PollutionMeter = ({ pollutionLevel }) => {
     }
   };
 
+  const handleReducePollution = () => {
+    // Implement logic to reduce pollution
+    onReducePollution();
+  };
+
   return (
     <PollutionMeterContainer>
       <h2>Pollution</h2>
@@ -35,12 +39,19 @@ const PollutionMeter = ({ pollutionLevel }) => {
         aria-label={`Pollution Level: ${getPollutionStatus()}`}
       />
       <p>Status: {getPollutionStatus()}</p>
+      {pollutionLevel >= 70 && (
+        <div>
+          <p>Warning: High pollution level! Take action to reduce pollution.</p>
+          <button onClick={handleReducePollution}>Reduce Pollution</button>
+        </div>
+      )}
     </PollutionMeterContainer>
   );
 };
 
 PollutionMeter.propTypes = {
   pollutionLevel: PropTypes.number.isRequired,
+  onReducePollution: PropTypes.func.isRequired,
 };
 
 export default PollutionMeter;
