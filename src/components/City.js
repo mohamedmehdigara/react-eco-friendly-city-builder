@@ -8,12 +8,12 @@ import CityExpansion from './CityExpansion';
 import CitizenInfo from './CitizenInfo'; // Import the CitizenInfo component
 import { CityContainer } from '../styles';
 
-const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores, weather, citizens, setCitizens }) => {
+const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores, citizens, setCitizens }) => {
   const [buildings, setBuildings] = useState([]);
   const [randomEvent, setRandomEvent] = useState(null);
   const [playerId] = useState(1);
   const [cityZone, setCityZone] = useState(1);
-  const [setWeather] = useState('sunny');
+  const [weather, setWeather] = useState('sunny');
 
   const addBuilding = () => {
     const newBuilding = {
