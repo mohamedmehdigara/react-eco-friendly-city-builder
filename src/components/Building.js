@@ -1,30 +1,48 @@
-// Building.js
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { BuildingContainer, BuildingDetails, UpgradeButton } from '../styles';
+
+// Import styled components
+import {
+  BuildingContainer,
+  BuildingDetails,
+  UpgradeButton,
+  BuildingInfo,
+  BuildingLabel,
+  ResidentIcon,
+  EcoLevelIcon,
+  SolarPanelIcon,
+} from './styles'; // Adjust path as needed
 
 const Building = ({ type, floors, color, ecoLevel, residents, onUpgrade, onInfo }) => {
   const [showInfo, setShowInfo] = useState(false);
 
   const handleInfo = () => {
-    // Toggle the showInfo state to display/hide building information
     setShowInfo(!showInfo);
   };
 
   return (
     <BuildingContainer type={type} color={color}>
-      <p>{capitalizeFirstLetter(type)} Building</p>
-      {floors && <BuildingDetails>Floors: {floors}</BuildingDetails>}
-      {residents && <BuildingDetails>Residents: {residents}</BuildingDetails>}
-      <BuildingDetails>Eco Level: {ecoLevel}</BuildingDetails>
-      {renderUpgradeButton(ecoLevel, onUpgrade)}
+      <BuildingLabel>
+        {capitalizeFirstLetter(type)} Building
+      </BuildingLabel>
+
+      <BuildingDetails>
+        <ResidentIcon /> {residents} Residents
+      </BuildingDetails>
+      <BuildingDetails>
+        <EcoLevelIcon /> Eco Level: {ecoLevel}
+      </BuildingDetails>
+      {ecoLevel < 5 && <UpgradeButton onClick={onUpgrade}>Upgrade</UpgradeButton>}
+
       <button onClick={handleInfo}>Toggle Info</button>
+
       {showInfo && (
-        <div>
-          {/* Additional building information */}
-          <p>Additional Information:</p>
+        <BuildingInfo>
+          <p>Floors: {floors}</p>
           {/* Add more details as needed */}
-        </div>
+          <p>Energy Source: {/* Display energy source based on ecoLevel */}</p>
+          <p>Waste Management: {/* Display waste management details */}</p>
+        </BuildingInfo>
       )}
     </BuildingContainer>
   );
@@ -46,9 +64,5 @@ Building.defaultProps = {
 };
 
 const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
-
-const renderUpgradeButton = (ecoLevel, onUpgrade) => {
-  return ecoLevel < 5 && <UpgradeButton onClick={onUpgrade}>Upgrade</UpgradeButton>;
-};
 
 export default Building;

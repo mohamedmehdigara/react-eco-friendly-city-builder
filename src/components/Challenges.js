@@ -1,54 +1,53 @@
-// Challenges.js
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+
+// Import styled components
+import { ChallengeList, ChallengeItem, ToggleButton, DeleteButton, NewChallengeInput, AddChallengeButton } from './styles'; // Adjust path as needed
 
 const Challenges = ({ challenges, onToggleChallenge, onDeleteChallenge, onAddChallenge }) => {
   const [newChallenge, setNewChallenge] = useState('');
 
   const handleToggleChallenge = (id) => {
-    // Implement logic to toggle the completion status of the challenge
     onToggleChallenge(id);
   };
 
   const handleDeleteChallenge = (id) => {
-    // Implement logic to delete the challenge
     onDeleteChallenge(id);
   };
 
   const handleAddChallenge = () => {
-    // Implement logic to add a new challenge
     onAddChallenge(newChallenge);
     setNewChallenge(''); // Clear the input field after adding a challenge
   };
 
   return (
-    <div>
+    <ChallengeList>
       <h2>Challenges</h2>
       <ul>
         {challenges.map(({ id, description, completed }) => (
-          <li key={id} style={getListItemStyle(completed)}>
+          <ChallengeItem key={id}>
             <span>{description}</span>
             <div>
-              <button onClick={() => handleToggleChallenge(id)}>
+              <ToggleButton onClick={() => handleToggleChallenge(id)}>
                 {completed ? 'Undo' : 'Complete'}
-              </button>
-              <button onClick={() => handleDeleteChallenge(id)}>Delete</button>
+              </ToggleButton>
+              <DeleteButton onClick={() => handleDeleteChallenge(id)}>Delete</DeleteButton>
             </div>
-          </li>
+          </ChallengeItem>
         ))}
       </ul>
 
       {/* Form to add a new challenge */}
-      <div>
+      <NewChallengeInput>
         <input
           type="text"
           value={newChallenge}
           onChange={(e) => setNewChallenge(e.target.value)}
           placeholder="Enter a new challenge"
         />
-        <button onClick={handleAddChallenge}>Add Challenge</button>
-      </div>
-    </div>
+        <AddChallengeButton onClick={handleAddChallenge}>Add Challenge</AddChallengeButton>
+      </NewChallengeInput>
+    </ChallengeList>
   );
 };
 
@@ -64,10 +63,5 @@ Challenges.propTypes = {
   onDeleteChallenge: PropTypes.func.isRequired,
   onAddChallenge: PropTypes.func.isRequired,
 };
-
-const getListItemStyle = (completed) => ({
-  textDecoration: completed ? 'line-through' : 'none',
-  // Add more styles if needed
-});
 
 export default Challenges;
