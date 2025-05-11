@@ -10,6 +10,7 @@ import { CityContainer } from '../styles';
 import RenewableEnergySources from './RenewableEnergySources';
 import GreenSpaces from './GreenSpaces';
 import TransportationNetwork from './TransportationNetwork';
+import WasteManagement from './WasteManagement';
 
 const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores, citizens, setCitizens }) => {
   const [buildings, setBuildings] = useState([]);
@@ -34,6 +35,12 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
     { id: 2, type: 'bicycle', name: 'Bicycle Commuting', usage: 25 },
     { id: 3, type: 'bus', name: 'Electric Bus Network', usage: 30 },
     { id: 4, type: 'train', name: 'Light Rail System', usage: 10 },
+  ];
+
+   const cityWasteData = [
+    { id: 1, type: 'municipal', name: 'General Waste', collectionMethod: 'Curbside Pickup (Weekly)', recyclingRate: 15 },
+    { id: 2, type: 'recyclable', name: 'Recyclable Materials', collectionMethod: 'Separate Bins (Bi-Weekly)', recyclingRate: 65 },
+    { id: 3, type: 'organic', name: 'Organic Waste', collectionMethod: 'Compost Collection (Monthly)', recyclingRate: 30 },
   ];
 
   const addBuilding = () => {
@@ -141,6 +148,7 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
                   <GreenSpaces parks={parksData} />
                         <TransportationNetwork modes={transportationData} />
 
+      <WasteManagement wasteData={cityWasteData} />
 
 
     </CityContainer>

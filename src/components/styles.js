@@ -232,3 +232,43 @@ export const UsageInfo = styled.span`
   color: #757575;
 `;
 
+
+
+
+// Existing styles for other components...
+
+export const WasteManagementContainer = styled.div`
+  border: 1px solid #a1887f; /* Brownish border */
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #fbe9e7; /* Very light brown background */
+`;
+
+export const WasteTypeItem = styled.div`
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  span {
+    font-weight: bold;
+    color: #795548; /* Brown */
+  }
+`;
+
+export const CollectionMethod = styled.p`
+  font-size: 14px;
+  color: #757575;
+  margin-left: 1.5em; /* Indent a bit */
+`;
+
+export const RecyclingRate = styled.p`
+  font-size: 14px;
+  color: #4caf50; /* Green for positive aspect */
+  margin-left: 1.5em; /* Indent a bit */
+`;
+
+
