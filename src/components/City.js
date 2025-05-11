@@ -9,6 +9,7 @@ import CitizenInfo from './CitizenInfo'; // Import the CitizenInfo component
 import { CityContainer } from '../styles';
 import RenewableEnergySources from './RenewableEnergySources';
 import GreenSpaces from './GreenSpaces';
+import TransportationNetwork from './TransportationNetwork';
 
 const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores, citizens, setCitizens }) => {
   const [buildings, setBuildings] = useState([]);
@@ -26,6 +27,13 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
     { id: 1, name: 'Central Eco-Park', size: 50, ecoFeatures: ['Solar Lighting', 'Rainwater Harvesting'] },
     { id: 2, name: 'Community Garden Oasis', size: 15, ecoFeatures: ['Composting Program', 'Native Plantings'] },
     { id: 3, name: 'Riverside Nature Preserve', size: 120 },
+  ];
+
+   const transportationData = [
+    { id: 1, type: 'electric_car', name: 'Electric Vehicles', usage: 35 },
+    { id: 2, type: 'bicycle', name: 'Bicycle Commuting', usage: 25 },
+    { id: 3, type: 'bus', name: 'Electric Bus Network', usage: 30 },
+    { id: 4, type: 'train', name: 'Light Rail System', usage: 10 },
   ];
 
   const addBuilding = () => {
@@ -131,6 +139,8 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
       <CitizenInfo citizens={citizens} />
             <RenewableEnergySources sources={energySourcesData} />
                   <GreenSpaces parks={parksData} />
+                        <TransportationNetwork modes={transportationData} />
+
 
 
     </CityContainer>

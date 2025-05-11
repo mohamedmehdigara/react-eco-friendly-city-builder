@@ -197,3 +197,38 @@ export const FeatureTag = styled.span`
   margin-bottom: 5px;
   display: inline-block;
 `;
+
+
+
+// Existing styles for other components...
+
+export const TransportationContainer = styled.div`
+  border: 1px solid #64b5f6; /* Light blue border */
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #e3f2fd; /* Very light blue background */
+`;
+
+export const TransportModeItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const ModeName = styled.span`
+  font-weight: bold;
+  color: #1e88e5; /* Blue */
+`;
+
+export const UsageInfo = styled.span`
+  font-size: 14px;
+  color: #757575;
+`;
+
