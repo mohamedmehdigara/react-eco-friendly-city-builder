@@ -1,18 +1,23 @@
-// CitizenInfo.js
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const CitizenInfo = ({ citizens }) => (
-  <div>
-    <h2>Citizen Awareness</h2>
-    {citizens && citizens.map((citizen) => (
-      <div key={citizen.id}>
-        <p>Awareness Level: {citizen.awarenessLevel}</p>
-        <p>Adopted Practices: {citizen.adoptedPractices.join(', ')}</p>
-      </div>
-    ))}
-  </div>
-);
+// Import styled components
+import { CitizenInfoContainer, CitizenItem } from './styles'; // Adjust path as needed
+
+const CitizenInfo = ({ citizens }) => {
+  return (
+    <CitizenInfoContainer>
+      <h2>Citizen Awareness</h2>
+      {citizens && citizens.map((citizen) => (
+        <CitizenItem key={citizen.id}>
+          <p>Awareness Level: {citizen.awarenessLevel}</p>
+          <p>Adopted Practices: {citizen.adoptedPractices.join(', ')}</p>
+          {/* Add progress bar for awareness level (optional) */}
+        </CitizenItem>
+      ))}
+    </CitizenInfoContainer>
+  );
+};
 
 CitizenInfo.propTypes = {
   citizens: PropTypes.arrayOf(

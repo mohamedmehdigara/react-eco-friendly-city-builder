@@ -108,3 +108,48 @@ export const AddChallengeButton = styled.button`
   border-radius: 3px;
   cursor: pointer; /* Indicate clickable button */
 `;
+
+export const CitizenInfoContainer = styled.div`
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 20px;
+`;
+
+export const CitizenItem = styled.div`
+  margin-bottom: 5px;
+`;
+
+
+
+// Existing styles for other components...
+
+export const RenewableEnergyContainer = styled.div`
+  border: 1px solid #aed581; /* Light green/yellow border */
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #f1f8e9; /* Very light green background */
+`;
+
+export const EnergySourceItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const EnergyProduction = styled.span`
+  font-size: 14px;
+  color: #757575;
+`;
+
+export const Icon = styled.span`
+  margin-right: 8px;
+  font-size: 1.2em;
+`;

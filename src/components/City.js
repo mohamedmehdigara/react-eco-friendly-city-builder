@@ -7,6 +7,7 @@ import RandomEvent from './RandomEvent';
 import CityExpansion from './CityExpansion';
 import CitizenInfo from './CitizenInfo'; // Import the CitizenInfo component
 import { CityContainer } from '../styles';
+import RenewableEnergySources from './RenewableEnergySources';
 
 const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores, citizens, setCitizens }) => {
   const [buildings, setBuildings] = useState([]);
@@ -14,6 +15,11 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
   const [playerId] = useState(1);
   const [cityZone, setCityZone] = useState(1);
   const [weather, setWeather] = useState('sunny');
+   const energySourcesData = [
+    { id: 1, type: 'solar', name: 'Solar Farm Alpha', production: 120 },
+    { id: 2, type: 'wind', name: 'Wind Park Beta', production: 90 },
+    { id: 3, type: 'hydro', name: 'River Dam Gamma', production: 150 },
+  ];
 
   const addBuilding = () => {
     const newBuilding = {
@@ -116,6 +122,8 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
       {randomEvent && <RandomEvent event={randomEvent} onClose={handleCloseRandomEvent} />}
       <CityExpansion currentCityZone={cityZone} onCityExpansion={handleCityExpansion} />
       <CitizenInfo citizens={citizens} />
+            <RenewableEnergySources sources={energySourcesData} />
+
     </CityContainer>
   );
 };
