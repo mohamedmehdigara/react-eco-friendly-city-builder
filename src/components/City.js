@@ -12,6 +12,7 @@ import GreenSpaces from './GreenSpaces';
 import TransportationNetwork from './TransportationNetwork';
 import WasteManagement from './WasteManagement';
 import CityEvents from './CityEvents';
+import EcoProgress from './EcoProgress';
 
 const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores, citizens, setCitizens }) => {
   const [buildings, setBuildings] = useState([]);
@@ -64,6 +65,14 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
       date: '2025-07-10',
       description: 'Learn practical tips for sustainable living in an urban environment.',
     },
+  ];
+
+   const cityProgressData = [
+    { id: 1, label: 'Renewable Energy', value: 65, unit: '%', target: 100 },
+    { id: 2, label: 'Carbon Footprint Reduction', value: 30, unit: '%', target: 50 },
+    { id: 3, label: 'Recycling Rate', value: 70, unit: '%', target: 85 },
+    { id: 4, label: 'Green Space Coverage', value: 25, unit: '%', target: 30 },
+    { id: 5, label: 'Air Quality Index', value: 45, unit: '', target: 50 }, // Lower is better, so target is a max
   ];
 
 
@@ -174,6 +183,8 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
 
       <WasteManagement wasteData={cityWasteData} />
             <CityEvents events={cityEventsData} />
+                  <EcoProgress progressData={cityProgressData} />
+
 
 
 

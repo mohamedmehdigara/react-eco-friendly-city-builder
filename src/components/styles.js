@@ -324,3 +324,55 @@ export const ActionButton = styled.button`
   }
 `;
 
+
+
+// Existing styles for other components...
+
+export const EcoProgressContainer = styled.div`
+  border: 1px solid #66bb6a; /* Light green border */
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #e8f5e9; /* Very light green background */
+`;
+
+export const ProgressItem = styled.div`
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const ProgressLabel = styled.span`
+  font-weight: bold;
+  color: #388e3c; /* Green */
+  width: 40%; /* Adjust as needed */
+`;
+
+export const ProgressValue = styled.span`
+  color: #546e7a; /* Grayish blue */
+  width: 30%; /* Adjust as needed */
+  text-align: right;
+  margin-left: 10px;
+`;
+
+export const ProgressBarContainer = styled.div`
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  height: 10px;
+  width: 30%; /* Adjust as needed */
+  margin-left: 10px;
+  overflow: hidden; /* Hide overflow of the fill */
+`;
+
+export const ProgressBarFill = styled.div`
+  background-color: #8bc34a; /* Green fill */
+  height: 100%;
+  border-radius: 5px;
+  width: ${(props) => props.progress * 100}%; /* Dynamic width based on progress */
+`;
+
