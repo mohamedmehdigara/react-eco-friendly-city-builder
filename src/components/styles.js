@@ -418,3 +418,47 @@ export const StatusIndicator = styled.span`
   font-size: 0.8em;
   align-self: flex-start; /* Align to the left */
 `;
+
+
+// Existing styles for other components...
+
+export const GoalsContainer = styled.div`
+  border: 1px solid #a1c181; /* Soft green border */
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #e6f5e0; /* Very light green background */
+`;
+
+export const GoalItem = styled.div`
+  padding: 10px 0;
+  border-bottom: 1px solid #e0e0e0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const GoalTitle = styled.h3`
+  color: #558b2f; /* Darker green */
+  margin-bottom: 5px;
+  font-size: 1.1em;
+`;
+
+export const GoalDescription = styled.p`
+  font-size: 14px;
+  color: #546e7a; /* Grayish blue */
+  margin-bottom: 8px;
+`;
+
+export const TargetValue = styled.p`
+  font-size: 0.9em;
+  color: #2e7d32; /* Another shade of green */
+  margin-bottom: 5px;
+  font-weight: bold;
+`;
+
+export const Timeline = styled.p`
+  font-size: 0.9em;
+  color: #757575;
+`;

@@ -14,6 +14,7 @@ import WasteManagement from './WasteManagement';
 import CityEvents from './CityEvents';
 import EcoProgress from './EcoProgress';
 import SmartCityTech from './SmartCityTech';
+import FutureGoals from './FutureGoals';
 
 const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores, citizens, setCitizens }) => {
   const [buildings, setBuildings] = useState([]);
@@ -82,6 +83,38 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
     { id: 3, name: 'AI-Powered Traffic Management', description: 'Reduces congestion and optimizes flow.', isOperational: false },
     { id: 4, name: 'Sustainable Building Automation', description: 'Intelligent systems for energy and water efficiency in buildings.', isOperational: true },
   ];
+
+const cityFutureGoals = [
+    {
+      id: 1,
+      title: 'Achieve Carbon Neutrality',
+      description: 'Our city aims to eliminate net carbon emissions.',
+      targetValue: 'Net Zero Emissions',
+      timeline: 'By 2050',
+    },
+    {
+      id: 2,
+      title: '100% Renewable Energy',
+      description: 'Transition to entirely renewable energy sources for all city power needs.',
+      targetValue: '100% Renewable Energy',
+      timeline: 'By 2040',
+    },
+    {
+      id: 3,
+      title: 'Increase Green Space Coverage',
+      description: 'Expand parks and green areas within the city limits.',
+      targetValue: '35% Green Space',
+      timeline: 'By 2030',
+    },
+    {
+      id: 4,
+      title: 'Zero Waste City',
+      description: 'Minimize waste generation and maximize recycling and composting.',
+      targetValue: '90% Diversion Rate',
+      timeline: 'Ongoing',
+    },
+  ];
+
 
 
   const addBuilding = () => {
@@ -193,6 +226,8 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
             <CityEvents events={cityEventsData} />
                   <EcoProgress progressData={cityProgressData} />
                         <SmartCityTech technologies={cityTechData} />
+                              <FutureGoals goals={cityFutureGoals} />
+
 
 
 
