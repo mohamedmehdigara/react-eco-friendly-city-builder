@@ -13,6 +13,7 @@ import TransportationNetwork from './TransportationNetwork';
 import WasteManagement from './WasteManagement';
 import CityEvents from './CityEvents';
 import EcoProgress from './EcoProgress';
+import SmartCityTech from './SmartCityTech';
 
 const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores, citizens, setCitizens }) => {
   const [buildings, setBuildings] = useState([]);
@@ -73,6 +74,13 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
     { id: 3, label: 'Recycling Rate', value: 70, unit: '%', target: 85 },
     { id: 4, label: 'Green Space Coverage', value: 25, unit: '%', target: 30 },
     { id: 5, label: 'Air Quality Index', value: 45, unit: '', target: 50 }, // Lower is better, so target is a max
+  ];
+
+  const cityTechData = [
+    { id: 1, name: 'Smart Grid System', description: 'Optimizes energy distribution and reduces waste.', isOperational: true },
+    { id: 2, name: 'Environmental Sensor Network', description: 'Monitors air and water quality in real-time.', isOperational: true },
+    { id: 3, name: 'AI-Powered Traffic Management', description: 'Reduces congestion and optimizes flow.', isOperational: false },
+    { id: 4, name: 'Sustainable Building Automation', description: 'Intelligent systems for energy and water efficiency in buildings.', isOperational: true },
   ];
 
 
@@ -184,6 +192,8 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
       <WasteManagement wasteData={cityWasteData} />
             <CityEvents events={cityEventsData} />
                   <EcoProgress progressData={cityProgressData} />
+                        <SmartCityTech technologies={cityTechData} />
+
 
 
 

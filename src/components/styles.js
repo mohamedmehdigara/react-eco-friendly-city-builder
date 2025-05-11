@@ -376,3 +376,45 @@ export const ProgressBarFill = styled.div`
   width: ${(props) => props.progress * 100}%; /* Dynamic width based on progress */
 `;
 
+
+// Existing styles for other components...
+
+export const TechContainer = styled.div`
+  border: 1px solid #7986cb; /* Indigo border */
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #e8eaf6; /* Very light indigo background */
+`;
+
+export const TechItem = styled.div`
+  padding: 10px 0;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const TechTitle = styled.h3`
+  color: #3f51b5; /* Indigo */
+  margin-bottom: 5px;
+  font-size: 1.1em;
+`;
+
+export const TechDescription = styled.p`
+  font-size: 14px;
+  color: #546e7a; /* Grayish blue */
+  margin-bottom: 8px;
+`;
+
+export const StatusIndicator = styled.span`
+  background-color: ${(props) => (props.isOperational ? '#81c784' : '#ffb74d')}; /* Green for operational, orange for development */
+  color: white;
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: 0.8em;
+  align-self: flex-start; /* Align to the left */
+`;
