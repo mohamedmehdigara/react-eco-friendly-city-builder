@@ -153,3 +153,47 @@ export const Icon = styled.span`
   margin-right: 8px;
   font-size: 1.2em;
 `;
+
+
+
+// Existing styles for other components...
+
+export const GreenSpacesContainer = styled.div`
+  border: 1px solid #8bc34a; /* Green border */
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #f1f8e9; /* Very light green background */
+`;
+
+export const ParkItem = styled.div`
+  padding: 10px 0;
+  border-bottom: 1px solid #e0e0e0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const ParkName = styled.h3`
+  margin-bottom: 5px;
+  color: #388e3c; /* Darker green */
+  font-size: 1.1em;
+`;
+
+export const ParkDetails = styled.p`
+  font-size: 14px;
+  color: #757575;
+  margin-bottom: 3px;
+`;
+
+export const FeatureTag = styled.span`
+  background-color: #c8e6c9; /* Light green background for tags */
+  color: #388e3c; /* Darker green text for tags */
+  font-size: 0.9em;
+  padding: 3px 8px;
+  border-radius: 15px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  display: inline-block;
+`;

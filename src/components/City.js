@@ -8,6 +8,7 @@ import CityExpansion from './CityExpansion';
 import CitizenInfo from './CitizenInfo'; // Import the CitizenInfo component
 import { CityContainer } from '../styles';
 import RenewableEnergySources from './RenewableEnergySources';
+import GreenSpaces from './GreenSpaces';
 
 const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores, citizens, setCitizens }) => {
   const [buildings, setBuildings] = useState([]);
@@ -19,6 +20,12 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
     { id: 1, type: 'solar', name: 'Solar Farm Alpha', production: 120 },
     { id: 2, type: 'wind', name: 'Wind Park Beta', production: 90 },
     { id: 3, type: 'hydro', name: 'River Dam Gamma', production: 150 },
+  ];
+
+   const parksData = [
+    { id: 1, name: 'Central Eco-Park', size: 50, ecoFeatures: ['Solar Lighting', 'Rainwater Harvesting'] },
+    { id: 2, name: 'Community Garden Oasis', size: 15, ecoFeatures: ['Composting Program', 'Native Plantings'] },
+    { id: 3, name: 'Riverside Nature Preserve', size: 120 },
   ];
 
   const addBuilding = () => {
@@ -123,6 +130,8 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
       <CityExpansion currentCityZone={cityZone} onCityExpansion={handleCityExpansion} />
       <CitizenInfo citizens={citizens} />
             <RenewableEnergySources sources={energySourcesData} />
+                  <GreenSpaces parks={parksData} />
+
 
     </CityContainer>
   );
