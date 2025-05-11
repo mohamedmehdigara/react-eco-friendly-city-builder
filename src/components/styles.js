@@ -272,3 +272,55 @@ export const RecyclingRate = styled.p`
 `;
 
 
+
+// Existing styles for other components...
+
+export const EventsContainer = styled.div`
+  border: 1px solid #4db6ac; /* Teal border */
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #e0f2f1; /* Very light teal background */
+`;
+
+export const EventItem = styled.div`
+  padding: 10px 0;
+  border-bottom: 1px solid #e0e0e0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const EventTitle = styled.h3`
+  color: #00897b; /* Teal */
+  margin-bottom: 5px;
+  font-size: 1.1em;
+`;
+
+export const EventDate = styled.p`
+  font-size: 0.9em;
+  color: #757575;
+  margin-bottom: 8px;
+`;
+
+export const EventDescription = styled.p`
+  font-size: 14px;
+  color: #546e7a; /* Grayish blue */
+  margin-bottom: 10px;
+`;
+
+export const ActionButton = styled.button`
+  background-color: #00897b; /* Teal */
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+
+  &:hover {
+    background-color: #00695c; /* Darker teal */
+  }
+`;
+

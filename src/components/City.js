@@ -11,6 +11,7 @@ import RenewableEnergySources from './RenewableEnergySources';
 import GreenSpaces from './GreenSpaces';
 import TransportationNetwork from './TransportationNetwork';
 import WasteManagement from './WasteManagement';
+import CityEvents from './CityEvents';
 
 const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores, citizens, setCitizens }) => {
   const [buildings, setBuildings] = useState([]);
@@ -42,6 +43,29 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
     { id: 2, type: 'recyclable', name: 'Recyclable Materials', collectionMethod: 'Separate Bins (Bi-Weekly)', recyclingRate: 65 },
     { id: 3, type: 'organic', name: 'Organic Waste', collectionMethod: 'Compost Collection (Monthly)', recyclingRate: 30 },
   ];
+
+  const cityEventsData = [
+    {
+      id: 1,
+      title: 'Annual Green City Festival',
+      date: '2025-06-15',
+      description: 'Join us for a day of eco-friendly activities, workshops, and local vendors!',
+    },
+    {
+      id: 2,
+      title: 'Community Clean-Up Drive - Riverside Park',
+      date: '2025-05-25',
+      description: 'Help us keep our parks clean and beautiful. All volunteers welcome!',
+      registrationLink: 'https://example.com/clean-up-register',
+    },
+    {
+      id: 3,
+      title: 'Sustainable Living Workshop',
+      date: '2025-07-10',
+      description: 'Learn practical tips for sustainable living in an urban environment.',
+    },
+  ];
+
 
   const addBuilding = () => {
     const newBuilding = {
@@ -149,6 +173,8 @@ const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, 
                         <TransportationNetwork modes={transportationData} />
 
       <WasteManagement wasteData={cityWasteData} />
+            <CityEvents events={cityEventsData} />
+
 
 
     </CityContainer>
