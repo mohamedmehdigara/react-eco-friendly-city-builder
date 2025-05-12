@@ -15,6 +15,7 @@ import CityEvents from './CityEvents';
 import EcoProgress from './EcoProgress';
 import SmartCityTech from './SmartCityTech';
 import FutureGoals from './FutureGoals';
+import CitizenFeedback from './CitizenFeedback';
 
 const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores, citizens, setCitizens }) => {
   const [buildings, setBuildings] = useState([]);
@@ -115,6 +116,12 @@ const cityFutureGoals = [
     },
   ];
 
+   const [cityFeedback, setCityFeedback] = useState([
+    { id: 1, name: 'Alice', text: 'More bike lanes needed on Elm Street!', timestamp: Date.now() - 86400000 },
+    { id: 2, name: 'Bob', text: 'Love the new community gardens.', timestamp: Date.now() - 3600000 },
+  ]);
+
+  
 
 
   const addBuilding = () => {
@@ -205,6 +212,12 @@ const cityFutureGoals = [
     setCityZone((prevZone) => prevZone + 1);
   };
 
+  const handleAddCityFeedback = (newFeedback) => {
+    setCityFeedback([...cityFeedback, { id: Date.now(), ...newFeedback, timestamp: Date.now() }]);
+    // In a real application, you would likely send this data to a server
+  };
+
+
   return (
     <CityContainer>
       <button onClick={addBuilding}>Build Eco-Friendly Building</button>
@@ -227,6 +240,8 @@ const cityFutureGoals = [
                   <EcoProgress progressData={cityProgressData} />
                         <SmartCityTech technologies={cityTechData} />
                               <FutureGoals goals={cityFutureGoals} />
+                                    <CitizenFeedback feedbackItems={cityFeedback} onAddFeedback={handleAddCityFeedback} />
+
 
 
 

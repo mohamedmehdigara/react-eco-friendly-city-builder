@@ -462,3 +462,90 @@ export const Timeline = styled.p`
   font-size: 0.9em;
   color: #757575;
 `;
+
+
+
+// Existing styles for other components...
+
+export const FeedbackContainer = styled.div`
+  border: 1px solid #80cbc4; /* Teal accent border */
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #e0f7fa; /* Very light teal background */
+`;
+
+export const FeedbackForm = styled.form`
+  padding: 15px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #b2dfdb;
+
+  h3 {
+    color: #009688; /* Teal */
+    margin-bottom: 10px;
+    font-size: 1.1em;
+  }
+`;
+
+export const Input = styled.input`
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #b2dfdb;
+  border-radius: 3px;
+  box-sizing: border-box; /* Prevent padding from increasing width */
+`;
+
+export const TextArea = styled.textarea`
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #b2dfdb;
+  border-radius: 3px;
+  box-sizing: border-box;
+  min-height: 80px;
+`;
+
+export const SubmitButton = styled.button`
+  background-color: #009688; /* Teal */
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+
+  &:hover {
+    background-color: #00796d; /* Darker teal */
+  }
+`;
+
+export const FeedbackList = styled.div`
+  padding: 15px;
+
+  h3 {
+    color: #009688; /* Teal */
+    margin-bottom: 10px;
+    font-size: 1.1em;
+  }
+`;
+
+export const FeedbackItem = styled.div`
+  padding: 8px 0;
+  border-bottom: 1px dashed #b2dfdb;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const FeedbackText = styled.p`
+  font-size: 14px;
+  color: #546e7a; /* Grayish blue */
+  margin-bottom: 5px;
+`;
+
+export const Timestamp = styled.span`
+  font-size: 0.8em;
+  color: #757575;
+`;
