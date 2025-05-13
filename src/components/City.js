@@ -18,6 +18,7 @@ import FutureGoals from './FutureGoals';
 import CitizenFeedback from './CitizenFeedback';
 import CityNews from './CityNews';
 import PollutionControl from './PollutionControl';
+import RandomEventGenerator from './RandomEventGenerator';
 
 const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores, citizens, setCitizens }) => {
   const [buildings, setBuildings] = useState([]);
@@ -175,6 +176,31 @@ const cityFutureGoals = [
   ];
 
 
+   const [cityState, setCityState] = useState({
+    citizenHappiness: 80,
+    budget: 5000,
+    energyConsumption: 1000,
+    pollutionLevel: 30,
+    recycledMaterials: 200,
+    // ... other city state properties
+  });
+  const [eventMessage, setEventMessage] = useState('');
+
+  useEffect(() => {
+    const gameTickInterval = setInterval(() => {
+      RandomEventGenerator(cityState, handleCityEvent);
+    }, 5000); // Trigger a random event check every 5 seconds (adjust as needed)
+
+    return () => clearInterval(gameTickInterval); // Cleanup on unmount
+  }, [cityState]); // Re-run effect if cityState changes (though the generator itself doesn't modify it directly here)
+
+  const handleCityEvent = (message, newState) => {
+    setCityState(newState);
+    setEventMessage(message);
+    // Optionally display the eventMessage to the user via UI
+    console.log('Event:', message);
+  };
+
 
 
   const addBuilding = () => {
@@ -299,7 +325,7 @@ const cityFutureGoals = [
 
 
 
-
+{eventMessage && <p>{eventMessage}</p>}
 
 
 
