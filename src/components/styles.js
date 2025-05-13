@@ -653,3 +653,30 @@ export const EffortTag = styled.span`
   margin-bottom: 5px;
   display: inline-block;
 `;
+
+
+// Existing styles for other components...
+
+export const BannerContainer = styled.div`
+  background-color: #81c784; /* Light green banner background */
+  color: white;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+`;
+
+export const CityName = styled.h1`
+  font-size: 2em;
+  margin-right: 20px;
+`;
+
+export const Logo = styled.img`
+  height: 50px;
+  margin-right: 20px;
+`;
+
+export const KeyInfo = styled.p`
+  margin-right: 15px;
+  font-size: 1em;
+`;

@@ -19,6 +19,7 @@ import CitizenFeedback from './CitizenFeedback';
 import CityNews from './CityNews';
 import PollutionControl from './PollutionControl';
 import RandomEventGenerator from './RandomEventGenerator';
+import CityBanner from './CityBanner';
 
 const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores, citizens, setCitizens }) => {
   const [buildings, setBuildings] = useState([]);
@@ -186,6 +187,11 @@ const cityFutureGoals = [
   });
   const [eventMessage, setEventMessage] = useState('');
 
+  const cityName = 'Eco-topia';
+  const currentHappiness = 75;
+  const currentBudget = 12000;
+
+
   useEffect(() => {
     const gameTickInterval = setInterval(() => {
       RandomEventGenerator(cityState, handleCityEvent);
@@ -326,6 +332,12 @@ const cityFutureGoals = [
 
 
 {eventMessage && <p>{eventMessage}</p>}
+
+ <CityBanner
+        cityName={cityName}
+        citizenHappiness={currentHappiness}
+        budget={currentBudget}
+      />
 
 
 
