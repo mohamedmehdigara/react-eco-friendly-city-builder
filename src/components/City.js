@@ -17,6 +17,7 @@ import SmartCityTech from './SmartCityTech';
 import FutureGoals from './FutureGoals';
 import CitizenFeedback from './CitizenFeedback';
 import CityNews from './CityNews';
+import PollutionControl from './PollutionControl';
 
 const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores, citizens, setCitizens }) => {
   const [buildings, setBuildings] = useState([]);
@@ -146,6 +147,34 @@ const cityFutureGoals = [
     },
   ];
 
+  const cityPollutantsData = [
+    {
+      id: 1,
+      name: 'PM2.5',
+      currentLevel: 15,
+      unit: 'µg/m³',
+      targetLevel: 10,
+      mitigationEfforts: ['Electric Vehicle Promotion', 'Industrial Emission Filters'],
+    },
+    {
+      id: 2,
+      name: 'NOx',
+      currentLevel: 40,
+      unit: 'ppb',
+      targetLevel: 30,
+      mitigationEfforts: ['Improved Public Transport', 'Traffic Flow Optimization'],
+    },
+    {
+      id: 3,
+      name: 'Water Contaminant X',
+      currentLevel: 0.5,
+      unit: 'ppm',
+      targetLevel: 0.2,
+      mitigationEfforts: ['Water Treatment Plant Upgrade'],
+    },
+  ];
+
+
 
 
   const addBuilding = () => {
@@ -266,6 +295,8 @@ const cityFutureGoals = [
                               <FutureGoals goals={cityFutureGoals} />
                                     <CitizenFeedback feedbackItems={cityFeedback} onAddFeedback={handleAddCityFeedback} />
       <CityNews newsItems={cityNewsData} />
+            <PollutionControl pollutants={cityPollutantsData} />
+
 
 
 

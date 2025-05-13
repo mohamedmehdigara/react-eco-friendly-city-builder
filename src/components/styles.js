@@ -596,3 +596,60 @@ export const ReadMoreLink = styled.a`
     text-decoration: underline;
   }
 `;
+
+
+// Existing styles for other components...
+
+export const ControlContainer = styled.div`
+  border: 1px solid #e57373; /* Light red border */
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #ffebee; /* Very light red background */
+`;
+
+export const PollutantItem = styled.div`
+  padding: 10px 0;
+  border-bottom: 1px solid #ef9a9a;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const PollutantName = styled.h3`
+  color: #d32f2f; /* Dark red */
+  margin-bottom: 5px;
+  font-size: 1.1em;
+`;
+
+export const CurrentLevel = styled.p`
+  font-size: 14px;
+  color: #f44336; /* Red */
+  margin-bottom: 3px;
+`;
+
+export const TargetLevel = styled.p`
+  font-size: 14px;
+  color: #43a047; /* Green (for target) */
+  margin-bottom: 3px;
+`;
+
+export const MitigationEfforts = styled.p`
+  font-size: 14px;
+  color: #757575;
+  margin-top: 8px;
+  margin-bottom: 3px;
+  font-weight: bold;
+`;
+
+export const EffortTag = styled.span`
+  background-color: #ffcdd2; /* Light red background for tags */
+  color: #d32f2f; /* Dark red text for tags */
+  font-size: 0.9em;
+  padding: 3px 8px;
+  border-radius: 15px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  display: inline-block;
+`;
