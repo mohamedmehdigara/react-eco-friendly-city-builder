@@ -20,6 +20,7 @@ import CityNews from './CityNews';
 import PollutionControl from './PollutionControl';
 import RandomEventGenerator from './RandomEventGenerator';
 import CityBanner from './CityBanner';
+import Dashboard from './Dashboard';
 
 const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores, citizens, setCitizens }) => {
   const [buildings, setBuildings] = useState([]);
@@ -338,6 +339,7 @@ const cityFutureGoals = [
         citizenHappiness={currentHappiness}
         budget={currentBudget}
       />
+        <Dashboard />
 
 
 

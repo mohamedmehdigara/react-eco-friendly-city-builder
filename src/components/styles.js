@@ -680,3 +680,64 @@ export const KeyInfo = styled.p`
   margin-right: 15px;
   font-size: 1em;
 `;
+
+
+// Existing styles for other components...
+
+export const ProfileContainer = styled.div`
+  border: 1px solid #90caf9; /* Light blue border */
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #e3f2fd; /* Very light blue background */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+export const Avatar = styled.img`
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 15px;
+  border: 2px solid #64b5f6; /* Blue avatar border */
+`;
+
+export const Username = styled.h2`
+  color: #1e88e5; /* Blue username color */
+  margin-bottom: 10px;
+  font-size: 1.5em;
+`;
+
+export const UserInfo = styled.div`
+  /* Styles for additional user information */
+  margin-bottom: 20px;
+`;
+
+export const PreferenceSection = styled.div`
+  width: 80%;
+  margin-top: 20px;
+  padding: 15px;
+  border-top: 1px solid #bbdefb;
+
+  h3 {
+    color: #1e88e5; /* Blue heading */
+    margin-bottom: 10px;
+    font-size: 1.2em;
+  }
+`;
+
+export const PreferenceItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+`;
+
+export const PreferenceLabel = styled.span`
+  font-weight: bold;
+  color: #3f51b5; /* Indigo label color */
+`;
+
+export const PreferenceValue = styled.span`
+  color: #546e7a; /* Grayish blue value color */
+`;
