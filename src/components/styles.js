@@ -549,3 +549,50 @@ export const Timestamp = styled.span`
   font-size: 0.8em;
   color: #757575;
 `;
+
+
+// Existing styles for other components...
+
+export const NewsContainer = styled.div`
+  border: 1px solid #9ccc65; /* Light green accent border */
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #e8f5e9; /* Very light green background */
+`;
+
+export const NewsItem = styled.div`
+  padding: 10px 0;
+  border-bottom: 1px solid #c8e6c9;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const NewsTitle = styled.h3`
+  color: #558b2f; /* Darker green */
+  margin-bottom: 5px;
+  font-size: 1.1em;
+`;
+
+export const PublishDate = styled.p`
+  font-size: 0.8em;
+  color: #757575;
+  margin-bottom: 8px;
+`;
+
+export const NewsSummary = styled.p`
+  font-size: 14px;
+  color: #546e7a; /* Grayish blue */
+  margin-bottom: 10px;
+`;
+
+export const ReadMoreLink = styled.a`
+  color: #1976d2; /* Blue link color */
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;

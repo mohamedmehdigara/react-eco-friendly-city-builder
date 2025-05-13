@@ -16,6 +16,7 @@ import EcoProgress from './EcoProgress';
 import SmartCityTech from './SmartCityTech';
 import FutureGoals from './FutureGoals';
 import CitizenFeedback from './CitizenFeedback';
+import CityNews from './CityNews';
 
 const City = ({ resources, setResources, setPollutionLevel, hasEducationCenter, onBuildEducationCenter, updateScores, citizens, setCitizens }) => {
   const [buildings, setBuildings] = useState([]);
@@ -122,6 +123,29 @@ const cityFutureGoals = [
   ]);
 
   
+
+  const cityNewsData = [
+    {
+      id: 1,
+      title: 'New Solar Farm Project Approved',
+      publishDate: Date.now() - 86400000 * 2, // Two days ago
+      summary: 'The city council has approved the construction of a new large-scale solar farm...',
+      link: 'https://example.com/solar-farm-news',
+    },
+    {
+      id: 2,
+      title: 'Community Recycling Program Expansion',
+      publishDate: Date.now() - 3600000 * 12, // Twelve hours ago
+      summary: 'The city is expanding its community recycling program to include more materials...',
+    },
+    {
+      id: 3,
+      title: 'Green Transportation Initiative Update',
+      publishDate: Date.now() - 3600000 * 24 * 7, // One week ago
+      summary: 'Progress on the electric bus fleet and new bike lanes is on schedule...',
+    },
+  ];
+
 
 
   const addBuilding = () => {
@@ -241,6 +265,7 @@ const cityFutureGoals = [
                         <SmartCityTech technologies={cityTechData} />
                               <FutureGoals goals={cityFutureGoals} />
                                     <CitizenFeedback feedbackItems={cityFeedback} onAddFeedback={handleAddCityFeedback} />
+      <CityNews newsItems={cityNewsData} />
 
 
 
