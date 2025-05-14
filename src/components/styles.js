@@ -787,3 +787,42 @@ export const TopicContent = styled.div`
   font-size: 0.95em;
   white-space: pre-line; /* Preserve line breaks */
 `;
+
+
+// Existing styles for other components...
+
+export const WeatherContainer = styled.div`
+  border: 1px solid #b3e5fc; /* Light blue accent border */
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #e1f5fe; /* Very light blue background */
+  text-align: center;
+`;
+
+export const Temperature = styled.h3`
+  font-size: 2em;
+  color: #29b6f6; /* Bright blue */
+  margin-bottom: 5px;
+`;
+
+export const Conditions = styled.p`
+  font-size: 1.2em;
+  color: #4fc3f7; /* Another shade of blue */
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+
+export const Details = styled.div`
+  display: flex;
+  justify-content: space-around;
+  font-size: 0.9em;
+  color: #64b5f6; /* Light blue */
+`;
+
+export const DetailItem = styled.p`
+  margin: 0;
+`;

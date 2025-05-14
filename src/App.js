@@ -10,6 +10,7 @@ import EducationCenter from './components/EducationCenter'; // Import the Educat
 import CityExpansion from './components/CityExpansion';
 import Leaderboard from './components/Leaderboard';
 import HelpPage from './components/HelpPage';
+import WeatherDisplay from './components/WeatherDisplay';
 
 function ErrorBoundary({ children }) {
   const [hasError, setHasError] = useState(false);
@@ -67,7 +68,7 @@ function App() {
     { id: 2, name: 'Player 2', score: 4500 },
   ]);
 
-  const [weather, setWeather] = useState('sunny'); // Add weather state
+  const [weather, setWeather] = useState(['sunny', 'windy', 'rainy']); // Add weather state
   const courses = []; // Define your courses array
   const workshops = []; // Define your workshops array
   const researchProjects = []; // Define your researchProjects array
@@ -219,6 +220,8 @@ function App() {
     setShowHelp(!showHelp);
   };
 
+  const cityName = 'Eco-topia';
+
   return (
     <ErrorBoundary>
       <div style={containerStyle}>
@@ -227,6 +230,13 @@ function App() {
         {showHelp ? 'Hide Help' : 'Show Help'}
       </button>
       {showHelp && <HelpPage />}
+
+               <button onClick={handleRandomWeatherEvent}>Change Weather</button>
+
+      <h1>Welcome to {cityName}</h1>
+
+            <WeatherDisplay city={cityName} />
+
 
         <ResourcePanel resources={resources} />
         <PollutionMeter pollutionLevel={pollutionLevel} />
@@ -258,7 +268,6 @@ function App() {
           workshops={educationCenterUpgrades.workshops}
           researchProjects={educationCenterUpgrades.researchProjects}
         />
-         <button onClick={handleRandomWeatherEvent}>Change Weather</button>
       </div>
     </ErrorBoundary>
   );
