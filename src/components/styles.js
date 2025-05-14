@@ -741,3 +741,49 @@ export const PreferenceLabel = styled.span`
 export const PreferenceValue = styled.span`
   color: #546e7a; /* Grayish blue value color */
 `;
+
+
+// Existing styles for other components...
+
+export const HelpContainer = styled.div`
+  border: 1px solid #ffca28; /* Light yellow border */
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #fffde7; /* Very light yellow background */
+`;
+
+export const SectionTitle = styled.h2`
+  color: #f9a825; /* Yellow */
+  margin-bottom: 15px;
+  font-size: 1.8em;
+  text-align: center;
+`;
+
+export const TopicItem = styled.div`
+  margin-bottom: 10px;
+  border: 1px solid #fdd835; /* Slightly darker yellow border */
+  border-radius: 3px;
+`;
+
+export const TopicTitle = styled.div`
+  background-color: #fff8e1; /* Very light yellow background */
+  color: #f9a825; /* Yellow */
+  padding: 10px 15px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  span {
+    font-size: 1.2em;
+  }
+`;
+
+export const TopicContent = styled.div`
+  padding: 15px;
+  background-color: #fffde7; /* Very light yellow background */
+  color: #757575;
+  font-size: 0.95em;
+  white-space: pre-line; /* Preserve line breaks */
+`;

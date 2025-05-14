@@ -9,6 +9,7 @@ import TechnologyTree from './components/TechnologyTree';
 import EducationCenter from './components/EducationCenter'; // Import the EducationCenter component
 import CityExpansion from './components/CityExpansion';
 import Leaderboard from './components/Leaderboard';
+import HelpPage from './components/HelpPage';
 
 function ErrorBoundary({ children }) {
   const [hasError, setHasError] = useState(false);
@@ -248,6 +249,7 @@ function App() {
         />
          <button onClick={handleRandomWeatherEvent}>Change Weather</button>
       </div>
+      <HelpPage />
     </ErrorBoundary>
   );
         }
