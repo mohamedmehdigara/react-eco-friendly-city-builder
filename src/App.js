@@ -76,6 +76,8 @@ function App() {
 
   const ACTION_COST = 500;
   const POLLUTION_INCREASE = 10;
+    const [showHelp, setShowHelp] = useState(false);
+
 
   const handleEcoAction = (actionType) => {
     if (resources.money >= ACTION_COST) {
@@ -213,10 +215,19 @@ function App() {
     setWeather(newWeather);
   };
 
+   const handleToggleHelp = () => {
+    setShowHelp(!showHelp);
+  };
+
   return (
     <ErrorBoundary>
       <div style={containerStyle}>
         <h1>Eco-Friendly City Builder</h1>
+         <button onClick={handleToggleHelp}>
+        {showHelp ? 'Hide Help' : 'Show Help'}
+      </button>
+      {showHelp && <HelpPage />}
+
         <ResourcePanel resources={resources} />
         <PollutionMeter pollutionLevel={pollutionLevel} />
         {!isGameOver ? (
@@ -249,7 +260,6 @@ function App() {
         />
          <button onClick={handleRandomWeatherEvent}>Change Weather</button>
       </div>
-      <HelpPage />
     </ErrorBoundary>
   );
         }
