@@ -11,6 +11,7 @@ import CityExpansion from './components/CityExpansion';
 import Leaderboard from './components/Leaderboard';
 import HelpPage from './components/HelpPage';
 import WeatherDisplay from './components/WeatherDisplay';
+import SettingsPage from './components/SettingsPage';
 
 function ErrorBoundary({ children }) {
   const [hasError, setHasError] = useState(false);
@@ -78,6 +79,7 @@ function App() {
   const ACTION_COST = 500;
   const POLLUTION_INCREASE = 10;
     const [showHelp, setShowHelp] = useState(false);
+    const [currentView, setCurrentView] = useState('city');
 
 
   const handleEcoAction = (actionType) => {
@@ -222,6 +224,10 @@ function App() {
 
   const cityName = 'Eco-topia';
 
+   const handleNavigate = (view) => {
+    setCurrentView(view);
+  };
+
   return (
     <ErrorBoundary>
       <div style={containerStyle}>
@@ -230,6 +236,8 @@ function App() {
         {showHelp ? 'Hide Help' : 'Show Help'}
       </button>
       {showHelp && <HelpPage />}
+
+       <SettingsPage />
 
                <button onClick={handleRandomWeatherEvent}>Change Weather</button>
 

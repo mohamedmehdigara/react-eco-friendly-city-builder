@@ -826,3 +826,55 @@ export const Details = styled.div`
 export const DetailItem = styled.p`
   margin: 0;
 `;
+
+
+// Existing styles for other components...
+
+export const SettingsContainer = styled.div`
+  border: 1px solid #80cbc4; /* Teal accent border */
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #e0f7fa; /* Very light teal background */
+`;
+
+export const SettingItem = styled.div`
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+`;
+
+export const SettingLabel = styled.label`
+  font-weight: bold;
+  margin-right: 15px;
+  width: 120px; /* Adjust as needed */
+  color: #009688; /* Teal */
+`;
+
+export const TextInput = styled.input`
+  padding: 10px;
+  border: 1px solid #b2dfdb;
+  border-radius: 3px;
+  flex-grow: 1;
+`;
+
+export const SelectInput = styled.select`
+  padding: 10px;
+  border: 1px solid #b2dfdb;
+  border-radius: 3px;
+  flex-grow: 1;
+`;
+
+export const SaveButton = styled.button`
+  background-color: #009688; /* Teal */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+
+  &:hover {
+    background-color: #00796d; /* Darker teal */
+  }
+`;
