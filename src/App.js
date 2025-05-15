@@ -15,6 +15,7 @@ import SettingsPage from './components/SettingsPage';
 import CityMap from './components/CityMap';
 import AchievementsDisplay from './components/AchievementsDisplay';
 import NotificationCenter from './components/NotificationCenter';
+import ResourceManager from './components/ResourceManager';
 
 function ErrorBoundary({ children }) {
   const [hasError, setHasError] = useState(false);
@@ -103,6 +104,9 @@ function App() {
     { id: 2, message: 'Low energy levels detected.', type: 'warning', timestamp: Date.now() - 5000, icon: '⚠️' },
     { id: 3, message: 'Residential zone built successfully.', type: 'info', timestamp: Date.now(), icon: '🏠' },
   ]);
+
+    const [showResourceDetails, setShowResourceDetails] = useState(null); // State for showing resource details
+
 
 
   const handleEcoAction = (actionType) => {
@@ -273,6 +277,52 @@ function App() {
     return () => clearTimeout(newNotificationTimeout);
   }, []);
 
+  const handleResourceDetails = (resourceName) => {
+    console.log(`Showing details for ${resourceName}`);
+    setShowResourceDetails(resourceName); // Set the state to show details
+  };
+
+  // Add this function:
+  const renderResourceDetails = () => {
+    if (!showResourceDetails) return null;
+
+    switch (showResourceDetails) {
+      case 'money':
+        return (
+          <div style={{  }}>
+            <h3>Money Details</h3>
+            <p>Current balance: ${resources.money}</p>
+            <p>Income sources: ...</p>
+            <p>Expenses: ...</p>
+            <button onClick={() => setShowResourceDetails(null)}>Close</button>
+          </div>
+        );
+      case 'energy':
+        return (
+          <div style={{  }}>
+            <h3>Energy Details</h3>
+            <p>Current energy level: {resources.energy} MW</p>
+            <p>Production sources: ...</p>
+            <p>Consumption: ...</p>
+             <button onClick={() => setShowResourceDetails(null)}>Close</button>
+          </div>
+        );
+      case 'pollution':
+          return(
+            <div style={{}}>
+              <h3>Pollution Details</h3>
+              <p>Pollution level: {resources.pollutionLevel}</p>
+              <p>Pollution Sources: ... </p>
+              <p> Effects: ...</p>
+              <button onClick={() => setShowResourceDetails(null)}>Close</button>
+            </div>
+          );
+      default:
+        return null;
+    }
+  };
+
+
   return (
     <ErrorBoundary>
       <div style={containerStyle}>
@@ -297,6 +347,14 @@ function App() {
 
         <h1>Your City</h1>
       <NotificationCenter notifications={notifications} />
+
+       {currentView === 'resources' && (
+          <>
+            <ResourcePanel resources={resources} />
+            <ResourceManager resources={resources} onResourceDetails={handleResourceDetails} />
+            {renderResourceDetails()}
+          </>
+        )}
 
         {currentView === 'city' && (
           <City

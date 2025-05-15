@@ -1030,3 +1030,61 @@ export const NotificationIcon = styled.span`
   margin-right: 10px;
   font-size: 1em;
 `;
+
+
+// Existing styles for other components...
+
+// ResourceManager styles
+export const ResourceManagerContainer = styled.div`
+  border: 1px solid #aed581;
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #e8f5e9;
+`;
+
+export const ResourceCategory = styled.div`
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #c5e1a5;
+`;
+
+export const CategoryTitle = styled.h3`
+  color: #7cb342;
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.2em;
+`;
+
+export const ResourceItem = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+`;
+
+export const ResourceLabel = styled.span`
+  font-weight: bold;
+  margin-right: 10px;
+  color: #558b2f;
+  width: 120px;
+`;
+
+export const ResourceValue = styled.span`
+  flex-grow: 1;
+  color: #388e3c;
+`;
+
+export const ResourceDetailsButton = styled.button`
+  background-color: #8bc34a;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.8em;
+  margin-left: 10px;
+
+  &:hover {
+    background-color: #689f38;
+  }
+`;
