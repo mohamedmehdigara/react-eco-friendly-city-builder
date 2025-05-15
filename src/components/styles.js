@@ -878,3 +878,29 @@ export const SaveButton = styled.button`
     background-color: #00796d; /* Darker teal */
   }
 `;
+
+
+// Existing styles for other components...
+
+export const MapContainer = styled.div`
+  border: 1px solid #7cb342; /* Light green border */
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #c8e6c9; /* Very light green background */
+`;
+
+export const Zone = styled.div`
+  background-color: #a5d6a7; /* Slightly darker green */
+  color: white;
+  border-radius: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8em;
+  padding: 5px;
+`;
+
+export const ZoneLabel = styled.span`
+  /* Style for the zone name */
+`;

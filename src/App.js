@@ -12,6 +12,7 @@ import Leaderboard from './components/Leaderboard';
 import HelpPage from './components/HelpPage';
 import WeatherDisplay from './components/WeatherDisplay';
 import SettingsPage from './components/SettingsPage';
+import CityMap from './components/CityMap';
 
 function ErrorBoundary({ children }) {
   const [hasError, setHasError] = useState(false);
@@ -70,7 +71,6 @@ function App() {
     { id: 2, name: 'Player 2', score: 4500 },
   ]);
 
-  const [weather, setWeather] = useState(generateRandomWeather()); // Initialize weather with a random value
   const courses = []; // Define your courses array
   const workshops = []; // Define your workshops array
   const researchProjects = []; // Define your researchProjects array
@@ -79,6 +79,13 @@ function App() {
   const POLLUTION_INCREASE = 10;
   const [showHelp, setShowHelp] = useState(false);
   const [currentView, setCurrentView] = useState('city');
+   const cityStructure = [
+    { id: 1, name: 'Residential-1', area: 'a' },
+    { id: 2, name: 'Industrial', area: 'b' },
+    { id: 3, name: 'Commercial', area: 'c' },
+    { id: 4, name: 'Park', area: 'd' },
+    { id: 5, name: 'Residential-2', area: 'e' },
+  ];
 
   const handleEcoAction = (actionType) => {
     if (resources.money >= ACTION_COST) {
@@ -209,6 +216,9 @@ function App() {
     return weatherOptions[randomIndex];
   };
 
+    const [weather, setWeather] = useState(generateRandomWeather()); // Initialize weather with a random value
+
+
   const handleRandomWeatherEvent = () => {
     const newWeather = generateRandomWeather();
     setWeather(newWeather);
@@ -273,6 +283,8 @@ function App() {
         {currentView === 'settings' && <SettingsPage />}
 
         {isGameOver && <GameOver score={resources.money} onRestart={handleRestart} />}
+                <CityMap cityZones={cityStructure} />
+
       </div>
     </ErrorBoundary>
   );

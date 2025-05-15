@@ -36,3 +36,14 @@
     transform: rotate(360deg);
   }
 }
+
+.city-map-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Example: two columns */
+  grid-template-rows: auto auto; /* Example: automatic rows */
+  gap: 10px; /* Spacing between zones */
+  grid-template-areas:
+    'a b'
+    'c b'
+    'd e';
+}
