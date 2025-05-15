@@ -43,25 +43,26 @@ function App() {
   const [pollutionLevel, setPollutionLevel] = useState(0);
   const [isGameOver, setGameOver] = useState(false);
   const [hasEducationCenter, setHasEducationCenter] = useState(false); // Track if the Education Center has been built
-  const [educationCenterUpgrades, setEducationCenterUpgrades] = useState({courses: [
-    { id: 1, name: 'Advanced Environmental Science', level: 1 },
-    // Add more courses as needed
-  ],
-  workshops: [
-    { id: 1, name: 'Sustainable Architecture Workshop', level: 1 },
-    // Add more workshops as needed
-  ],
-  researchProjects: [
-    { id: 1, name: 'Renewable Energy Innovation', level: 1 },
-    // Add more research projects as needed
-  ],
-});
+  const [educationCenterUpgrades, setEducationCenterUpgrades] = useState({
+    courses: [
+      { id: 1, name: 'Advanced Environmental Science', level: 1 },
+      // Add more courses as needed
+    ],
+    workshops: [
+      { id: 1, name: 'Sustainable Architecture Workshop', level: 1 },
+      // Add more workshops as needed
+    ],
+    researchProjects: [
+      { id: 1, name: 'Renewable Energy Innovation', level: 1 },
+      // Add more research projects as needed
+    ],
+  });
 
   const [technologies, setTechnologies] = useState({
     cleanerEnergy: false,
     advancedWasteManagement: false,
     innovativeTransportation: false,
-  }); 
+  });
 
   const [currentCityZone, setCurrentCityZone] = useState(1);
   const [scores, setScores] = useState([
@@ -69,18 +70,15 @@ function App() {
     { id: 2, name: 'Player 2', score: 4500 },
   ]);
 
-  const [weather, setWeather] = useState(['sunny', 'windy', 'rainy']); // Add weather state
+  const [weather, setWeather] = useState(generateRandomWeather()); // Initialize weather with a random value
   const courses = []; // Define your courses array
   const workshops = []; // Define your workshops array
   const researchProjects = []; // Define your researchProjects array
 
-
-
   const ACTION_COST = 500;
   const POLLUTION_INCREASE = 10;
-    const [showHelp, setShowHelp] = useState(false);
-    const [currentView, setCurrentView] = useState('city');
-
+  const [showHelp, setShowHelp] = useState(false);
+  const [currentView, setCurrentView] = useState('city');
 
   const handleEcoAction = (actionType) => {
     if (resources.money >= ACTION_COST) {
@@ -108,6 +106,7 @@ function App() {
     setPollutionLevel(0);
     setGameOver(false);
     setHasEducationCenter(false); // Reset Education Center status
+    setCurrentView('city'); // Reset the current view to city
   };
 
   const handleBuildEducationCenter = () => {
@@ -122,24 +121,23 @@ function App() {
   };
 
   const handleUpgrade = (type, itemId) => {
-    // Modify your upgrade function to handle the undefined cas 
-  // Get the appropriate array based on the type
-  const targetArray = type === 'course' ? courses : type === 'workshop' ? workshops : researchProjects;
+    // Modify your upgrade function to handle the undefined case
+    // Get the appropriate array based on the type
+    const targetArray = type === 'course' ? courses : type === 'workshop' ? workshops : researchProjects;
 
-  // Check if the array is defined before using findIndex
-  if (targetArray) {
-    const index = targetArray.findIndex((item) => item.id === itemId);
+    // Check if the array is defined before using findIndex
+    if (targetArray) {
+      const index = targetArray.findIndex((item) => item.id === itemId);
 
-    if (index !== -1) {
-      // Implement your upgrade logic using the index
-      // ...
+      if (index !== -1) {
+        // Implement your upgrade logic using the index
+        // ...
+      } else {
+        console.error(`Item with id ${itemId} not found in the array`);
+      }
     } else {
-      console.error(`Item with id ${itemId} not found in the array`);
+      console.error('Target array is undefined');
     }
-  } else {
-    console.error('Target array is undefined');
-  }
-
 
     setEducationCenterUpgrades((prevUpgrades) => {
       const updatedUpgrades = { ...prevUpgrades };
@@ -178,7 +176,6 @@ function App() {
           // You can also update resources or other game mechanics
         }
         return updatedUpgrades;
-      
       });
     }
   };
@@ -192,7 +189,6 @@ function App() {
   const handleCityExpansion = () => {
     // ... logic for city expansion
     setCurrentCityZone((prevCityZone) => prevCityZone + 1);
-
   };
 
   const updateScores = (playerId, newScore) => {
@@ -218,13 +214,13 @@ function App() {
     setWeather(newWeather);
   };
 
-   const handleToggleHelp = () => {
+  const handleToggleHelp = () => {
     setShowHelp(!showHelp);
   };
 
   const cityName = 'Eco-topia';
 
-   const handleNavigate = (view) => {
+  const handleNavigate = (view) => {
     setCurrentView(view);
   };
 
@@ -232,53 +228,54 @@ function App() {
     <ErrorBoundary>
       <div style={containerStyle}>
         <h1>Eco-Friendly City Builder</h1>
-         <button onClick={handleToggleHelp}>
-        {showHelp ? 'Hide Help' : 'Show Help'}
-      </button>
-      {showHelp && <HelpPage />}
+        <nav>
+          <button onClick={() => handleNavigate('city')}>City</button>
+          <button onClick={() => handleNavigate('resources')}>Resources</button>
+          <button onClick={() => handleNavigate('pollution')}>Pollution</button>
+          <button onClick={() => handleNavigate('ecoActions')}>Eco Actions</button>
+          <button onClick={() => handleNavigate('technology')}>Technology</button>
+          <button onClick={() => handleNavigate('education')}>Education</button>
+          <button onClick={() => handleNavigate('expansion')}>Expansion</button>
+          <button onClick={() => handleNavigate('leaderboard')}>Leaderboard</button>
+          <button onClick={() => handleNavigate('help')}>Help</button>
+          <button onClick={() => handleNavigate('weather')}>Weather</button>
+          <button onClick={() => handleNavigate('settings')}>Settings</button>
+        </nav>
 
-       <SettingsPage />
-
-               <button onClick={handleRandomWeatherEvent}>Change Weather</button>
-
-      <h1>Welcome to {cityName}</h1>
-
-            <WeatherDisplay city={cityName} />
-
-
-        <ResourcePanel resources={resources} />
-        <PollutionMeter pollutionLevel={pollutionLevel} />
-        {!isGameOver ? (
-          <>
-            <div>
-              <City
-                onGameOver={handleGameOver}
-                resources={resources}
-                setResources={setResources}
-                setPollutionLevel={setPollutionLevel}
-                hasEducationCenter={hasEducationCenter}
-                onBuildEducationCenter={handleBuildEducationCenter}
-              />
-              <EcoActions onEcoAction={handleEcoAction} onBuildEducationCenter={handleBuildEducationCenter} />
-              <TechnologyTree technologies={technologies} onResearch={handleResearch} /> {/* Render the TechnologyTree component */}
-              <CityExpansion currentCityZone={currentCityZone} onCityExpansion={handleCityExpansion} />
-            </div>
-          </>
-        ) : (
-          <GameOver score={resources.money} onRestart={handleRestart} />
+        {currentView === 'city' && (
+          <City
+            onGameOver={handleGameOver}
+            resources={resources}
+            setResources={setResources}
+            setPollutionLevel={setPollutionLevel}
+            hasEducationCenter={hasEducationCenter}
+            onBuildEducationCenter={handleBuildEducationCenter}
+          />
         )}
-        <Leaderboard scores={scores} />
-        <EducationCenter
-          onBuildEducationCenter={handleBuildEducationCenter}
-          onUpgrade={handleUpgrade}
-          onResearch={handleResearch}
-          courses={educationCenterUpgrades.courses}
-          workshops={educationCenterUpgrades.workshops}
-          researchProjects={educationCenterUpgrades.researchProjects}
-        />
+        {currentView === 'resources' && <ResourcePanel resources={resources} />}
+        {currentView === 'pollution' && <PollutionMeter pollutionLevel={pollutionLevel} />}
+        {currentView === 'ecoActions' && <EcoActions onEcoAction={handleEcoAction} onBuildEducationCenter={handleBuildEducationCenter} />}
+        {currentView === 'technology' && <TechnologyTree technologies={technologies} onResearch={handleResearch} />}
+        {currentView === 'education' && (
+          <EducationCenter
+            onBuildEducationCenter={handleBuildEducationCenter}
+            onUpgrade={handleUpgrade}
+            onResearch={handleResearch}
+            courses={educationCenterUpgrades.courses}
+            workshops={educationCenterUpgrades.workshops}
+            researchProjects={educationCenterUpgrades.researchProjects}
+          />
+        )}
+        {currentView === 'expansion' && <CityExpansion currentCityZone={currentCityZone} onCityExpansion={handleCityExpansion} />}
+        {currentView === 'leaderboard' && <Leaderboard scores={scores} />}
+        {currentView === 'help' && <HelpPage />}
+        {currentView === 'weather' && <WeatherDisplay city={cityName} />}
+        {currentView === 'settings' && <SettingsPage />}
+
+        {isGameOver && <GameOver score={resources.money} onRestart={handleRestart} />}
       </div>
     </ErrorBoundary>
   );
-        }
+}
 
 export default App;
