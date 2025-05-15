@@ -981,3 +981,52 @@ export const LockedOverlay = styled.div`
   font-size: 1.5em;
   border-radius: 3px;
 `;
+
+
+// Existing styles for other components...
+
+export const NotificationContainer = styled.div`
+  border: 1px solid #64b5f6; /* Light blue border */
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #e1f5fe; /* Very light blue background */
+`;
+
+export const NotificationItem = styled.div`
+  padding: 10px;
+  margin-bottom: 8px;
+  border-left: 5px solid ${({ type }) => {
+    switch (type) {
+      case 'warning':
+        return '#ffca28';
+      case 'success':
+        return '#66bb6a';
+      case 'error':
+        return '#ef5350';
+      default:
+        return '#29b6f6';
+    }
+  }};
+  background-color: #fff;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+`;
+
+export const NotificationMessage = styled.p`
+  margin: 0;
+  flex-grow: 1;
+  font-size: 0.95em;
+`;
+
+export const NotificationTimestamp = styled.span`
+  font-size: 0.75em;
+  color: #757575;
+  margin-left: 10px;
+`;
+
+export const NotificationIcon = styled.span`
+  margin-right: 10px;
+  font-size: 1em;
+`;

@@ -14,6 +14,7 @@ import WeatherDisplay from './components/WeatherDisplay';
 import SettingsPage from './components/SettingsPage';
 import CityMap from './components/CityMap';
 import AchievementsDisplay from './components/AchievementsDisplay';
+import NotificationCenter from './components/NotificationCenter';
 
 function ErrorBoundary({ children }) {
   const [hasError, setHasError] = useState(false);
@@ -94,6 +95,13 @@ function App() {
     { id: 3, title: 'Clean Air Initiative', description: 'Reduce pollution level to 10.', isUnlocked: false, progress: 30 },
     { id: 4, title: 'City Planner', description: 'Expand your city to zone level 3.', isUnlocked: true },
     { id: 5, title: 'Recycling Master', description: 'Recycle 500 units of waste.', isUnlocked: false, progress: 15 },
+  ]);
+
+
+ const [notifications, setNotifications] = useState([
+    { id: 1, message: 'Welcome to Eco-topia!', type: 'success', timestamp: Date.now() - 10000, icon: '🎉' },
+    { id: 2, message: 'Low energy levels detected.', type: 'warning', timestamp: Date.now() - 5000, icon: '⚠️' },
+    { id: 3, message: 'Residential zone built successfully.', type: 'info', timestamp: Date.now(), icon: '🏠' },
   ]);
 
 
@@ -253,6 +261,18 @@ function App() {
     // ... more logic to update achievements based on game state
   }, []);
 
+  useEffect(() => {
+    // Example: Adding a new notification after a delay
+    const newNotificationTimeout = setTimeout(() => {
+      setNotifications(prev => [
+        ...prev,
+        { id: Date.now(), message: 'Pollution levels slightly increased.', type: 'warning', timestamp: Date.now(), icon: '🏭' },
+      ]);
+    }, 15000);
+
+    return () => clearTimeout(newNotificationTimeout);
+  }, []);
+
   return (
     <ErrorBoundary>
       <div style={containerStyle}>
@@ -274,6 +294,9 @@ function App() {
           
       
         </nav>
+
+        <h1>Your City</h1>
+      <NotificationCenter notifications={notifications} />
 
         {currentView === 'city' && (
           <City
