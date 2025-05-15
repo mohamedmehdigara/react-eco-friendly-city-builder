@@ -1,5 +1,5 @@
 // App.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import City from './components/City';
 import ResourcePanel from './components/ResourcePanel';
 import PollutionMeter from './components/PollutionMeter';
@@ -13,6 +13,7 @@ import HelpPage from './components/HelpPage';
 import WeatherDisplay from './components/WeatherDisplay';
 import SettingsPage from './components/SettingsPage';
 import CityMap from './components/CityMap';
+import AchievementsDisplay from './components/AchievementsDisplay';
 
 function ErrorBoundary({ children }) {
   const [hasError, setHasError] = useState(false);
@@ -86,6 +87,15 @@ function App() {
     { id: 4, name: 'Park', area: 'd' },
     { id: 5, name: 'Residential-2', area: 'e' },
   ];
+
+  const [achievements, setAchievements] = useState([
+    { id: 1, title: 'First Steps', description: 'Build your first residential zone.', isUnlocked: true },
+    { id: 2, title: 'Green Power', description: 'Generate 50 energy from renewable sources.', isUnlocked: false, progress: 75 },
+    { id: 3, title: 'Clean Air Initiative', description: 'Reduce pollution level to 10.', isUnlocked: false, progress: 30 },
+    { id: 4, title: 'City Planner', description: 'Expand your city to zone level 3.', isUnlocked: true },
+    { id: 5, title: 'Recycling Master', description: 'Recycle 500 units of waste.', isUnlocked: false, progress: 15 },
+  ]);
+
 
   const handleEcoAction = (actionType) => {
     if (resources.money >= ACTION_COST) {
@@ -234,6 +244,15 @@ function App() {
     setCurrentView(view);
   };
 
+  useEffect(() => {
+    if (/* condition to unlock Green Power */ true) {
+      setAchievements(prev => prev.map(ach =>
+        ach.id === 2 ? { ...ach, isUnlocked: true, progress: 100 } : ach
+      ));
+    }
+    // ... more logic to update achievements based on game state
+  }, []);
+
   return (
     <ErrorBoundary>
       <div style={containerStyle}>
@@ -250,6 +269,10 @@ function App() {
           <button onClick={() => handleNavigate('help')}>Help</button>
           <button onClick={() => handleNavigate('weather')}>Weather</button>
           <button onClick={() => handleNavigate('settings')}>Settings</button>
+          <button onClick={() => handleNavigate('achievements')}>Your Achievements</button>
+
+          
+      
         </nav>
 
         {currentView === 'city' && (
@@ -262,6 +285,7 @@ function App() {
             onBuildEducationCenter={handleBuildEducationCenter}
           />
         )}
+        <AchievementsDisplay achievements={achievements} />
         {currentView === 'resources' && <ResourcePanel resources={resources} />}
         {currentView === 'pollution' && <PollutionMeter pollutionLevel={pollutionLevel} />}
         {currentView === 'ecoActions' && <EcoActions onEcoAction={handleEcoAction} onBuildEducationCenter={handleBuildEducationCenter} />}

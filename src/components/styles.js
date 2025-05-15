@@ -904,3 +904,80 @@ export const Zone = styled.div`
 export const ZoneLabel = styled.span`
   /* Style for the zone name */
 `;
+
+
+// Existing styles for other components...
+
+export const AchievementsContainer = styled.div`
+  border: 1px solid #ffb74d; /* Light orange border */
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #ffe0b2; /* Very light orange background */
+`;
+
+export const AchievementItem = styled.div`
+  position: relative;
+  padding: 15px;
+  margin-bottom: 10px;
+  border: 1px solid #ffcc80; /* Slightly darker orange border */
+  border-radius: 3px;
+  background-color: ${({ isUnlocked }) => (isUnlocked ? '#fff3e0' : '#fbe9e7')}; /* Lighter if unlocked */
+  color: ${({ isUnlocked }) => (isUnlocked ? '#5d4037' : '#795548')}; /* Darker text if locked */
+  opacity: ${({ isUnlocked }) => (isUnlocked ? 1 : 0.7)};
+`;
+
+export const AchievementTitle = styled.h3`
+  margin-top: 0;
+  margin-bottom: 5px;
+  font-size: 1.2em;
+`;
+
+export const AchievementDescription = styled.p`
+  font-size: 0.95em;
+  margin-bottom: 10px;
+`;
+
+export const ProgressContainer = styled.div`
+  background-color: #ffe0b2; /* Light orange background */
+  border-radius: 5px;
+  overflow: hidden;
+  height: 15px;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+`;
+
+export const ProgressBar = styled.div`
+  background-color: #ff9800; /* Orange progress color */
+  height: 100%;
+  width: ${({ progress }) => progress}%;
+  border-radius: 5px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 5px;
+  box-sizing: border-box;
+`;
+
+export const ProgressText = styled.span`
+  font-size: 0.8em;
+  color: #fff;
+  min-width: 25px; /* Ensure text is visible */
+  text-align: right;
+`;
+
+export const LockedOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5em;
+  border-radius: 3px;
+`;
