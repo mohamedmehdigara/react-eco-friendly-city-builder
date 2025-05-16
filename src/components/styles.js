@@ -1141,3 +1141,48 @@ export const ConstructButton = styled.button`
     cursor: not-allowed;
   }
 `;
+
+
+// Existing styles for other components...
+
+export const EcoScoreContainer = styled.div`
+  border: 1px solid #4caf50; /* Green border */
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #e8f5e9; /* Very light green background */
+  text-align: center;
+`;
+
+export const ScoreTitle = styled.h2`
+  color: #43a047; /* Darker green */
+  margin-top: 0;
+  margin-bottom: 15px;
+`;
+
+export const OverallScore = styled.div`
+  font-size: 2.5em;
+  color: #66bb6a; /* Another shade of green */
+  margin-bottom: 20px;
+  font-weight: bold;
+`;
+
+export const ScoreItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 15px;
+  border-bottom: 1px solid #c8e6c9;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const ScoreLabel = styled.span`
+  color: #388e3c; /* Dark green */
+`;
+
+export const ScoreValue = styled.span`
+  font-weight: bold;
+  color: #2e7d32; /* Even darker green */
+`;

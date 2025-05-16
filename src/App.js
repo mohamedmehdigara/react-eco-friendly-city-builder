@@ -17,6 +17,7 @@ import AchievementsDisplay from './components/AchievementsDisplay';
 import NotificationCenter from './components/NotificationCenter';
 import ResourceManager from './components/ResourceManager';
 import ConstructionPanel from './components/ConstructionPanel';
+import EcoScoreDisplay from './components/EcoScoreDisplay';
 
 function ErrorBoundary({ children }) {
   const [hasError, setHasError] = useState(false);
@@ -113,6 +114,13 @@ function App() {
     { id: 2, name: 'Wind Turbine', cost: 350 },
     { id: 3, name: 'Residential Zone', cost: 150 },
   ]);
+
+  const [ecoScoreData, setEcoScoreData] = useState({
+    pollutionReduction: { label: 'Pollution Reduced', value: 65, weight: 0.4 },
+    renewableEnergy: { label: 'Renewable Energy', value: 80, weight: 0.3 },
+    biodiversity: { label: 'Biodiversity Level', value: 70, weight: 0.3 },
+    wasteRecycling: { label: 'Waste Recycled', value: 90, weight: 0.2 },
+  });
 
   const handleEcoAction = (actionType) => {
     if (resources.money >= ACTION_COST) {
@@ -341,6 +349,21 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    // Example: Updating pollution reduction over time
+    const interval = setInterval(() => {
+      setEcoScoreData((prevData) => ({
+        ...prevData,
+        pollutionReduction: {
+          ...prevData.pollutionReduction,
+          value: Math.min(100, prevData.pollutionReduction.value + 1),
+        },
+      }));
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
 
 
   return (
@@ -373,6 +396,9 @@ function App() {
         onConstructBuilding={handleConstruct}
         resources={resources}
       />
+
+       <h1>City Health</h1>
+      <EcoScoreDisplay ecoScoreData={ecoScoreData} />
 
        {currentView === 'resources' && (
           <>
