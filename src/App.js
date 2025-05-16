@@ -16,6 +16,7 @@ import CityMap from './components/CityMap';
 import AchievementsDisplay from './components/AchievementsDisplay';
 import NotificationCenter from './components/NotificationCenter';
 import ResourceManager from './components/ResourceManager';
+import ConstructionPanel from './components/ConstructionPanel';
 
 function ErrorBoundary({ children }) {
   const [hasError, setHasError] = useState(false);
@@ -107,7 +108,11 @@ function App() {
 
     const [showResourceDetails, setShowResourceDetails] = useState(null); // State for showing resource details
 
-
+  const [availableBuildings, setAvailableBuildings] = useState([
+    { id: 1, name: 'Solar Panel', cost: 200 },
+    { id: 2, name: 'Wind Turbine', cost: 350 },
+    { id: 3, name: 'Residential Zone', cost: 150 },
+  ]);
 
   const handleEcoAction = (actionType) => {
     if (resources.money >= ACTION_COST) {
@@ -322,6 +327,21 @@ function App() {
     }
   };
 
+   const handleConstruct = (building) => {
+    if (resources.money >= building.cost) {
+      console.log(`Constructing: ${building.name}`);
+      setResources((prevResources) => ({
+        ...prevResources,
+        money: prevResources.money - building.cost,
+      }));
+      // Implement logic to actually place the building in the city
+    } else {
+      console.log(`Insufficient funds to build ${building.name}`);
+      // Optionally display a notification to the player
+    }
+  };
+
+
 
   return (
     <ErrorBoundary>
@@ -347,6 +367,12 @@ function App() {
 
         <h1>Your City</h1>
       <NotificationCenter notifications={notifications} />
+       <h1>City Construction</h1>
+      <ConstructionPanel
+        availableBuildings={availableBuildings}
+        onConstructBuilding={handleConstruct}
+        resources={resources}
+      />
 
        {currentView === 'resources' && (
           <>

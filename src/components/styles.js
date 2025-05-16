@@ -1088,3 +1088,56 @@ export const ResourceDetailsButton = styled.button`
     background-color: #689f38;
   }
 `;
+
+
+// Existing styles for other components...
+
+export const ConstructionContainer = styled.div`
+  border: 1px solid #81d4fa; /* Light blue border */
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #e0f7fa; /* Very light blue background */
+`;
+
+export const BuildingItem = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #b3e5fc;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const BuildingName = styled.span`
+  font-weight: bold;
+  color: #1e88e5; /* Blue */
+`;
+
+export const BuildingCost = styled.span`
+  color: #42a5f5; /* Light blue */
+  margin-left: 15px;
+`;
+
+export const ConstructButton = styled.button`
+  background-color: #29b6f6; /* Bright blue */
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+
+  &:hover {
+    background-color: #039be5; /* Darker blue */
+  }
+
+  &:disabled {
+    background-color: #90caf9; /* Light gray-blue */
+    cursor: not-allowed;
+  }
+`;
