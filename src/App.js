@@ -18,6 +18,7 @@ import NotificationCenter from './components/NotificationCenter';
 import ResourceManager from './components/ResourceManager';
 import ConstructionPanel from './components/ConstructionPanel';
 import EcoScoreDisplay from './components/EcoScoreDisplay';
+import BuildingInfoPanel from './components/BuildingInfoPanel';
 
 function ErrorBoundary({ children }) {
   const [hasError, setHasError] = useState(false);
@@ -121,6 +122,13 @@ function App() {
     biodiversity: { label: 'Biodiversity Level', value: 70, weight: 0.3 },
     wasteRecycling: { label: 'Waste Recycled', value: 90, weight: 0.2 },
   });
+
+  const [selectedBuilding, setSelectedBuilding] = useState(null);
+  const cityBuildings = [
+    { id: 1, name: 'Solar Farm', function: 'Generates clean energy', production: { energy: 50 }, pollution: -5, upgrades: [{ id: 101, name: 'Efficiency Boost', effect: '+10 energy' }] },
+    { id: 2, name: 'Residential Block', function: 'Provides housing', consumption: { energy: 5, water: 10 }, effects: [{ id: 201, name: 'Happy Residents', description: '+5% city growth' }] },
+    { id: 3, name: 'Coal Power Plant', function: 'Generates energy', production: { energy: 100 }, pollution: 20 },
+  ];
 
   const handleEcoAction = (actionType) => {
     if (resources.money >= ACTION_COST) {
@@ -365,6 +373,11 @@ function App() {
   }, []);
 
 
+const handleBuildingSelect = (buildingId) => {
+    const building = cityBuildings.find((b) => b.id === buildingId);
+    setSelectedBuilding(building);
+  };
+
 
   return (
     <ErrorBoundary>
@@ -519,6 +532,15 @@ function App() {
 
        <h1>City Health</h1>
       <EcoScoreDisplay ecoScoreData={ecoScoreData} />
+
+      <h1>City View</h1>
+      {/* Render your city tiles/elements here, making them clickable to call handleBuildingSelect */}
+      <div onClick={() => handleBuildingSelect(1)}>Solar Farm</div>
+      <div onClick={() => handleBuildingSelect(2)}>Residential Block</div>
+      <div onClick={() => handleBuildingSelect(3)}>Coal Power Plant</div>
+
+      <h2>Building Information</h2>
+      <BuildingInfoPanel building={selectedBuilding} />
 
        {currentView === 'resources' && (
           <>

@@ -1187,3 +1187,53 @@ export const ScoreValue = styled.span`
   color: #2e7d32; /* Even darker green */
 `;
 
+
+// Existing styles for other components...
+
+export const InfoPanelContainer = styled.div`
+  border: 1px solid #64b5f6; /* Light blue border */
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #e1f5fe; /* Very light blue background */
+`;
+
+export const PanelTitle = styled.h2`
+  color: #1e88e5; /* Blue */
+  margin-top: 0;
+  margin-bottom: 15px;
+  text-align: center;
+`;
+
+export const InfoItem = styled.div`
+  display: flex;
+  padding: 8px 0;
+  border-bottom: 1px solid #b3e5fc;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const InfoLabel = styled.span`
+  font-weight: bold;
+  color: #1565c0; /* Dark blue */
+  width: 120px;
+  margin-right: 10px;
+`;
+
+export const InfoValue = styled.span`
+  flex-grow: 1;
+  color: #1976d2; /* Medium blue */
+`;
+
+export const UpgradeList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin-top: 5px;
+`;
+
+export const UpgradeItem = styled.li`
+  padding: 5px 0;
+  color: #2e7d32; /* Green for upgrades/effects */
+`;
