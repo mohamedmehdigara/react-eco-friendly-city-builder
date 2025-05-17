@@ -1186,3 +1186,4 @@ export const ScoreValue = styled.span`
   font-weight: bold;
   color: #2e7d32; /* Even darker green */
 `;
+

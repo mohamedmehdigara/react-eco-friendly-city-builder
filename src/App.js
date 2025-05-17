@@ -370,19 +370,139 @@ function App() {
     <ErrorBoundary>
       <div style={containerStyle}>
         <h1>Eco-Friendly City Builder</h1>
-        <nav>
-          <button onClick={() => handleNavigate('city')}>City</button>
-          <button onClick={() => handleNavigate('resources')}>Resources</button>
-          <button onClick={() => handleNavigate('pollution')}>Pollution</button>
-          <button onClick={() => handleNavigate('ecoActions')}>Eco Actions</button>
-          <button onClick={() => handleNavigate('technology')}>Technology</button>
-          <button onClick={() => handleNavigate('education')}>Education</button>
-          <button onClick={() => handleNavigate('expansion')}>Expansion</button>
-          <button onClick={() => handleNavigate('leaderboard')}>Leaderboard</button>
-          <button onClick={() => handleNavigate('help')}>Help</button>
-          <button onClick={() => handleNavigate('weather')}>Weather</button>
-          <button onClick={() => handleNavigate('settings')}>Settings</button>
-          <button onClick={() => handleNavigate('achievements')}>Your Achievements</button>
+        <nav >
+          <button style={{
+  backgroundColor: "#4CAF50", /* Green */
+  color: "white",
+  padding: "10px 15px",
+  margin: "5px",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+  fontSize: "0.9em",
+  transition: "background-color 0.3s ease",
+}} onClick={() => handleNavigate('city')}>City</button>
+          <button style={{
+  backgroundColor: "#4CAF50", /* Green */
+  color: "white",
+  padding: "10px 15px",
+  margin: "5px",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+  fontSize: "0.9em",
+  transition: "background-color 0.3s ease",
+}} onClick={() => handleNavigate('resources')}>Resources</button>
+          <button style={{
+  backgroundColor: "#4CAF50", /* Green */
+  color: "white",
+  padding: "10px 15px",
+  margin: "5px",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+  fontSize: "0.9em",
+  transition: "background-color 0.3s ease",
+}} onClick={() => handleNavigate('pollution')}>Pollution</button>
+          <button style={{
+  backgroundColor: "#4CAF50", /* Green */
+  color: "white",
+  padding: "10px 15px",
+  margin: "5px",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+  fontSize: "0.9em",
+  transition: "background-color 0.3s ease",
+}} onClick={() => handleNavigate('ecoActions')}>Eco Actions</button>
+          <button style={{
+  backgroundColor: "#4CAF50", /* Green */
+  color: "white",
+  padding: "10px 15px",
+  margin: "5px",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+  fontSize: "0.9em",
+  transition: "background-color 0.3s ease",
+}} onClick={() => handleNavigate('technology')}>Technology</button>
+          <button style={{
+  backgroundColor: "#4CAF50", /* Green */
+  color: "white",
+  padding: "10px 15px",
+  margin: "5px",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+  fontSize: "0.9em",
+  transition: "background-color 0.3s ease",
+}} onClick={() => handleNavigate('education')}>Education</button>
+          <button style={{
+  backgroundColor: "#4CAF50", /* Green */
+  color: "white",
+  padding: "10px 15px",
+  margin: "5px",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+  fontSize: "0.9em",
+  transition: "background-color 0.3s ease",
+}} onClick={() => handleNavigate('expansion')}>Expansion</button>
+          <button style={{
+  backgroundColor: "#4CAF50", /* Green */
+  color: "white",
+  padding: "10px 15px",
+  margin: "5px",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+  fontSize: "0.9em",
+  transition: "background-color 0.3s ease",
+}} onClick={() => handleNavigate('leaderboard')}>Leaderboard</button>
+          <button style={{
+  backgroundColor: "#4CAF50", /* Green */
+  color: "white",
+  padding: "10px 15px",
+  margin: "5px",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+  fontSize: "0.9em",
+  transition: "background-color 0.3s ease",
+}} onClick={() => handleNavigate('help')}>Help</button>
+          <button style={{
+  backgroundColor: "#4CAF50", /* Green */
+  color: "white",
+  padding: "10px 15px",
+  margin: "5px",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+  fontSize: "0.9em",
+  transition: "background-color 0.3s ease",
+}} onClick={() => handleNavigate('weather')}>Weather</button>
+          <button style={{
+  backgroundColor: "#4CAF50", /* Green */
+  color: "white",
+  padding: "10px 15px",
+  margin: "5px",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+  fontSize: "0.9em",
+  transition: "background-color 0.3s ease",
+}} onClick={() => handleNavigate('settings')}>Settings</button>
+          <button style={{
+  backgroundColor: "#4CAF50", /* Green */
+  color: "white",
+  padding: "10px 15px",
+  margin: "5px",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+  fontSize: "0.9em",
+  transition: "background-color 0.3s ease",
+}} onClick={() => handleNavigate('achievements')}>Your Achievements</button>
 
           
       
