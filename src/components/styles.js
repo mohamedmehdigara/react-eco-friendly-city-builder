@@ -1,16 +1,6 @@
 import styled from 'styled-components';
 
-export const BuildingContainer = styled.div`
-  background-color: ${(props) => (props.color ? props.color : '#ddd')};
-  border-radius: 5px;
-  padding: 10px;
-  margin: 10px;
-  display: flex; /* Allow for horizontal layout of content */
-  flex-direction: column; /* Stack content vertically by default */
-  align-items: center; /* Center content horizontally */
-  width: 200px; /* Adjust width as needed */
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
-`;
+
 
 export const BuildingDetails = styled.p`
   font-size: 14px;
@@ -1113,10 +1103,7 @@ export const BuildingItem = styled.div`
   }
 `;
 
-export const BuildingName = styled.span`
-  font-weight: bold;
-  color: #1e88e5; /* Blue */
-`;
+
 
 export const BuildingCost = styled.span`
   color: #42a5f5; /* Light blue */
@@ -1236,4 +1223,106 @@ export const UpgradeList = styled.ul`
 export const UpgradeItem = styled.li`
   padding: 5px 0;
   color: #2e7d32; /* Green for upgrades/effects */
+`;
+
+export const PopulationContainer = styled.div`
+  border: 1px solid #ffcc80; /* Light orange border */
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #fff3e0; /* Very light orange background */
+`;
+
+
+
+export const PopulationStat = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #ffb74d;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const StatLabel = styled.span`
+  font-weight: bold;
+  color: #ef6c00; /* Dark orange */
+  flex-grow: 1;
+`;
+
+export const StatValue = styled.span`
+  color: #ff9800; /* Medium orange */
+  font-weight: 500;
+`;
+
+export const StatIcon = styled.span`
+  font-size: 1.5em;
+  margin-right: 15px;
+`;
+
+
+export const BuildingContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border: 1px solid #795548; /* Brown border */
+  border-radius: 8px;
+  padding: 15px;
+  margin: 10px;
+  background-color: #efebe9; /* Light gray-brown background */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+  }
+`;
+
+export const BuildingIcon = styled.div`
+  font-size: 3em;
+  margin-bottom: 10px;
+`;
+
+export const BuildingName = styled.h3`
+  color: #5d4037; /* Dark brown */
+  margin: 0 0 5px 0;
+`;
+
+export const BuildingStats = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 10px;
+`;
+
+export const StatItem = styled.div`
+  font-size: 0.9em;
+  color: #6d4c41;
+  margin: 0 5px;
+`;
+
+export const BuildingButton = styled.button`
+  background-color: #8d6e63; /* Medium brown */
+  color: white;
+  padding: 8px 15px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #795548; /* Darker brown */
+  }
+
+  &:disabled {
+    background-color: #bcaaa4;
+    cursor: not-allowed;
+  }
 `;

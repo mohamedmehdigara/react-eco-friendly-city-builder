@@ -19,6 +19,7 @@ import ResourceManager from './components/ResourceManager';
 import ConstructionPanel from './components/ConstructionPanel';
 import EcoScoreDisplay from './components/EcoScoreDisplay';
 import BuildingInfoPanel from './components/BuildingInfoPanel';
+import PopulationPanel from './components/PopulationPanel';
 
 function ErrorBoundary({ children }) {
   const [hasError, setHasError] = useState(false);
@@ -129,6 +130,13 @@ function App() {
     { id: 2, name: 'Residential Block', function: 'Provides housing', consumption: { energy: 5, water: 10 }, effects: [{ id: 201, name: 'Happy Residents', description: '+5% city growth' }] },
     { id: 3, name: 'Coal Power Plant', function: 'Generates energy', production: { energy: 100 }, pollution: 20 },
   ];
+
+   const [populationData, setPopulationData] = useState({
+    totalPopulation: 1500,
+    happiness: 85,
+    growthRate: 1.5,
+    employmentRate: 92,
+  });
 
   const handleEcoAction = (actionType) => {
     if (resources.money >= ACTION_COST) {
@@ -562,6 +570,8 @@ const handleBuildingSelect = (buildingId) => {
         )}
         <AchievementsDisplay achievements={achievements} />
         {currentView === 'resources' && <ResourcePanel resources={resources} />}
+                              <PopulationPanel populationData={populationData} />
+
         {currentView === 'pollution' && <PollutionMeter pollutionLevel={pollutionLevel} />}
         {currentView === 'ecoActions' && <EcoActions onEcoAction={handleEcoAction} onBuildEducationCenter={handleBuildEducationCenter} />}
         {currentView === 'technology' && <TechnologyTree technologies={technologies} onResearch={handleResearch} />}
@@ -583,6 +593,7 @@ const handleBuildingSelect = (buildingId) => {
 
         {isGameOver && <GameOver score={resources.money} onRestart={handleRestart} />}
                 <CityMap cityZones={cityStructure} />
+
 
       </div>
     </ErrorBoundary>
