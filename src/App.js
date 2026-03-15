@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useReducer, useRef } from 'react';
 
 // --- Integrated Styling Helper ---
 const styles = {
@@ -200,98 +200,186 @@ const DISASTERS = [
   { id: 'heat', name: 'Heatwave', icon: '🔥', effect: 'Energy Demand +50%', color: '#e67e22' },
 ];
 
-const LOCAL_STORAGE_KEY = 'eco_city_builder_save';
+const LOCAL_STORAGE_KEY = 'eco_city_builder_save_v3';
+
+// --- Reducer Logic for Senior State Management ---
+const initialState = {
+  resources: { money: 3500, energy: 50, pollution: 5, population: 100, happiness: 90, xp: 0, level: 1 },
+  buildings: Array(12).fill(null),
+  policies: { greenGrant: false, carbonTax: false, nightLights: true },
+  isNight: false,
+  weather: WEATHER_TYPES[0],
+  emergency: null,
+  history: [],
+  gamePaused: false,
+};
+
+function cityReducer(state, action) {
+  switch (action.type) {
+    case 'TICK':
+      const { buildings, resources, isNight, weather, emergency, policies } = state;
+      
+      const energyProduction = buildings.reduce((acc, b) => {
+        if (!b) return acc;
+        let val = b.energy;
+        if (b.id === 'solar') val *= (isNight ? 0.05 : weather.energyMod);
+        else if (b.id === 'wind') val *= weather.windMod;
+        if (emergency?.id === 'heat' && b.id === 'housing') val *= 1.5;
+        return acc + val;
+      }, 0);
+
+      let pollutionChange = buildings.reduce((acc, b) => acc + (b?.pollution || 0), 0);
+      if (emergency?.id === 'smog') pollutionChange += 5;
+      if (policies.carbonTax) pollutionChange -= 2;
+
+      const housingTotal = buildings.reduce((acc, b) => acc + (b?.housing || 0), 0);
+      const baseIncome = Math.floor(resources.population * 0.85);
+      const policyBonus = policies.greenGrant ? -200 : 0;
+      const taxBonus = policies.carbonTax ? 300 : 0;
+      const totalIncome = Math.floor((baseIncome + taxBonus + (baseIncome * (resources.happiness / 100))) * (emergency?.id === 'surge' ? 0.8 : 1.0)) + policyBonus;
+
+      const xpToNext = resources.level * 1000;
+      let newXp = resources.xp + 10;
+      let newLevel = resources.level;
+      if (newXp >= xpToNext) {
+        newXp -= xpToNext;
+        newLevel++;
+      }
+
+      return {
+        ...state,
+        history: [...state.history.slice(-19), totalIncome],
+        resources: {
+          ...resources,
+          money: resources.money + totalIncome,
+          energy: Math.max(-100, 40 + energyProduction),
+          pollution: Math.min(100, Math.max(0, resources.pollution + pollutionChange)),
+          population: Math.max(100, Math.floor(housingTotal + 100)),
+          happiness: Math.max(0, Math.min(100, resources.happiness - (resources.pollution / 5) + (resources.energy < 0 ? -15 : 1) + (emergency ? -10 : 0))),
+          xp: newXp,
+          level: newLevel,
+        }
+      };
+    case 'BUILD':
+      const newBuildings = [...state.buildings];
+      newBuildings[action.index] = { ...action.building, uniqueId: Date.now() };
+      return { ...state, buildings: newBuildings, resources: { ...state.resources, money: state.resources.money - action.building.cost } };
+    case 'DEMOLISH':
+      const demBuildings = [...state.buildings];
+      demBuildings[action.index] = null;
+      return { ...state, buildings: demBuildings, resources: { ...state.resources, money: state.resources.money - 200 } };
+    case 'TOGGLE_NIGHT':
+      return { ...state, isNight: !state.isNight };
+    case 'SET_WEATHER':
+      return { ...state, weather: action.weather };
+    case 'SET_EMERGENCY':
+      return { ...state, emergency: action.emergency };
+    case 'TOGGLE_POLICY':
+      return { ...state, policies: { ...state.policies, [action.policy]: !state.policies[action.policy] } };
+    case 'TOGGLE_PAUSE':
+      return { ...state, gamePaused: !state.gamePaused };
+    case 'EXPAND_GRID':
+      return { ...state, buildings: [...state.buildings, ...Array(action.slots).fill(null)] };
+    case 'LOAD_SAVE':
+      return { ...state, ...action.data };
+    case 'RESET':
+      return initialState;
+    default:
+      return state;
+  }
+}
+
+// --- Senior Component Optimization: Memoized Building Card ---
+const BuildingTile = React.memo(({ index, building, isNight, emergency, weather, onBuild, onDetail }) => {
+  return (
+    <div 
+      style={styles.buildingCard(!!building, isNight, !!emergency, weather.id)} 
+      onClick={() => !building ? onBuild(index) : onDetail({ ...building, gridIndex: index })}
+    >
+      <div style={styles.buildingIcon}>{building ? building.icon : '🏗️'}</div>
+      <strong style={{ fontSize: '0.85em' }}>{building ? building.name : 'Empty Lot'}</strong>
+      {building ? (
+        <div style={styles.badge(building.energy >= 0 ? (isNight && building.id === 'solar' ? '#f39c12' : '#4caf50') : '#f44336')}>
+          {isNight && building.id === 'solar' ? 'OFFLINE' : `${building.energy > 0 ? '+' : ''}${Math.round(building.energy * (building.id === 'solar' ? weather.energyMod : (building.id === 'wind' ? weather.windMod : 1)))}⚡`}
+        </div>
+      ) : (
+        <span style={{ fontSize: '0.7em', color: '#999' }}>Click to build</span>
+      )}
+    </div>
+  );
+});
+
+// --- Custom Hook: useEcoEngine ---
+function useEcoEngine() {
+  const [state, dispatch] = useReducer(cityReducer, initialState, (init) => {
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : init;
+  });
+
+  const [notification, setNotification] = useState(null);
+
+  // Persistence
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
+  }, [state]);
+
+  // Main Simulation Ticks
+  useEffect(() => {
+    if (state.gamePaused) return;
+    const simInterval = setInterval(() => dispatch({ type: 'TICK' }), 3000);
+    const envInterval = setInterval(() => {
+      dispatch({ type: 'TOGGLE_NIGHT' });
+      if (Math.random() < 0.3) {
+        dispatch({ type: 'SET_WEATHER', weather: WEATHER_TYPES[Math.floor(Math.random() * WEATHER_TYPES.length)] });
+      }
+    }, 15000);
+    return () => { clearInterval(simInterval); clearInterval(envInterval); };
+  }, [state.gamePaused]);
+
+  // Disaster Logic
+  useEffect(() => {
+    if (state.gamePaused || state.emergency) return;
+    const disasterCheck = setInterval(() => {
+      if (Math.random() < 0.1) {
+        const d = DISASTERS[Math.floor(Math.random() * DISASTERS.length)];
+        dispatch({ type: 'SET_EMERGENCY', emergency: d });
+        setNotification({ title: `ALERT: ${d.name}`, message: d.effect, type: "danger" });
+        setTimeout(() => {
+          dispatch({ type: 'SET_EMERGENCY', emergency: null });
+          setNotification(null);
+        }, 12000);
+      }
+    }, 20000);
+    return () => clearInterval(disasterCheck);
+  }, [state.gamePaused, state.emergency]);
+
+  // Expansion Logic
+  const totalSlotsNeeded = Math.min(24, 12 + (state.resources.level - 1) * 4);
+  useEffect(() => {
+    if (state.buildings.length < totalSlotsNeeded) {
+      dispatch({ type: 'EXPAND_GRID', slots: totalSlotsNeeded - state.buildings.length });
+    }
+  }, [totalSlotsNeeded, state.buildings.length]);
+
+  return { state, dispatch, notification, setNotification };
+}
 
 export default function App() {
-  // State Initialization with LocalStorage
-  const [resources, setResources] = useState(() => {
-    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-    return saved ? JSON.parse(saved).resources : {
-      money: 3500,
-      energy: 50,
-      pollution: 5,
-      population: 100,
-      happiness: 90,
-      xp: 0,
-      level: 1
-    };
-  });
-
-  const [buildings, setBuildings] = useState(() => {
-    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-    return saved ? JSON.parse(saved).buildings : Array(12).fill(null);
-  });
-
-  const [policies, setPolicies] = useState(() => {
-    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-    return saved ? JSON.parse(saved).policies : {
-      greenGrant: false,
-      carbonTax: false,
-      nightLights: true
-    };
-  });
-
+  const { state, dispatch, notification } = useEcoEngine();
   const [currentView, setCurrentView] = useState('city');
-  const [isNight, setIsNight] = useState(false);
-  const [gamePaused, setGamePaused] = useState(false);
-  const [emergency, setEmergency] = useState(null);
-  const [weather, setWeather] = useState(WEATHER_TYPES[0]);
   const [showBuildMenu, setShowBuildMenu] = useState(null); 
   const [selectedDetail, setSelectedDetail] = useState(null);
-  const [notification, setNotification] = useState(null);
   const [tickerMsg, setTickerMsg] = useState(CITIZEN_QUOTES[0]);
 
-  // Trackers for charts/visuals
-  const [history, setHistory] = useState([]);
+  const { resources, buildings, isNight, weather, emergency, policies, history, gamePaused } = state;
 
   // Derived Values
   const xpToNext = resources.level * 1000;
-  
-  // Dynamic Grid Size based on level
-  const totalSlots = Math.min(24, 12 + (resources.level - 1) * 4);
-  useEffect(() => {
-    if (buildings.length < totalSlots) {
-      setBuildings(prev => [...prev, ...Array(totalSlots - prev.length).fill(null)]);
-    }
-  }, [totalSlots, buildings.length]);
-
   const ecoScore = useMemo(() => {
     const renewableRatio = Math.min(100, (buildings.filter(b => b?.type === 'energy').length * 15));
     const pollutionImpact = 100 - resources.pollution;
     return Math.round((renewableRatio + pollutionImpact + resources.happiness) / 3);
   }, [buildings, resources.pollution, resources.happiness]);
-
-  // Persistent Saving Effect
-  useEffect(() => {
-    const saveData = { resources, buildings, policies };
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(saveData));
-  }, [resources, buildings, policies]);
-
-  // Day/Night, Weather & Disaster Loop
-  useEffect(() => {
-    if (gamePaused) return;
-    const interval = setInterval(() => {
-      setIsNight(prev => {
-        const nextIsNight = !prev;
-        // Change weather occasionally on day/night cycles
-        if (Math.random() < 0.3) {
-          setWeather(WEATHER_TYPES[Math.floor(Math.random() * WEATHER_TYPES.length)]);
-        }
-        return nextIsNight;
-      });
-      
-      if (Math.random() < 0.1 && !emergency) {
-        const d = DISASTERS[Math.floor(Math.random() * DISASTERS.length)];
-        setEmergency(d);
-        setNotification({ title: `ALERT: ${d.name}`, message: d.effect, type: "danger" });
-        setTimeout(() => {
-          setEmergency(null);
-          setNotification(null);
-        }, 12000);
-      }
-    }, 15000);
-    return () => clearInterval(interval);
-  }, [gamePaused, emergency]);
 
   // Ticker
   useEffect(() => {
@@ -301,99 +389,19 @@ export default function App() {
     return () => clearInterval(ticker);
   }, []);
 
-  // Simulation Logic
-  useEffect(() => {
-    if (gamePaused) return;
-
-    const timer = setInterval(() => {
-      setResources(prev => {
-        let energyProduction = buildings.reduce((acc, b) => {
-          if (!b) return acc;
-          let val = b.energy;
-          
-          // Weather and Night mods
-          if (b.id === 'solar') {
-             val *= (isNight ? 0.05 : weather.energyMod);
-          } else if (b.id === 'wind') {
-             val *= weather.windMod;
-          }
-          
-          if (emergency?.id === 'heat' && b.id === 'housing') val *= 1.5;
-          return acc + val;
-        }, 0);
-
-        let pollutionChange = buildings.reduce((acc, b) => acc + (b?.pollution || 0), 0);
-        if (emergency?.id === 'smog') pollutionChange += 5;
-        if (policies.carbonTax) pollutionChange -= 2;
-
-        const housingTotal = buildings.reduce((acc, b) => acc + (b?.housing || 0), 0);
-        
-        const baseIncome = Math.floor(prev.population * 0.85);
-        const policyBonus = policies.greenGrant ? -200 : 0;
-        const taxBonus = policies.carbonTax ? 300 : 0;
-        const surgePenalty = emergency?.id === 'surge' ? 0.8 : 1.0;
-        
-        const totalIncome = Math.floor((baseIncome + taxBonus + (baseIncome * (prev.happiness / 100))) * surgePenalty) + policyBonus;
-
-        let newXp = prev.xp + 10 + (ecoScore / 10);
-        let newLevel = prev.level;
-        if (newXp >= xpToNext) {
-          newXp -= xpToNext;
-          newLevel++;
-          setNotification({ title: "LEVEL UP!", message: `Your city reached Level ${newLevel}! More land unlocked.`, type: "success" });
-        }
-
-        // Store history for small trendline visualization
-        setHistory(h => [...h.slice(-19), totalIncome]);
-
-        return {
-          ...prev,
-          money: prev.money + totalIncome,
-          energy: Math.max(-100, 40 + energyProduction),
-          pollution: Math.min(100, Math.max(0, prev.pollution + pollutionChange)),
-          population: Math.max(100, Math.floor(housingTotal + 100)),
-          happiness: Math.max(0, Math.min(100, 
-            prev.happiness 
-            - (prev.pollution / 5) 
-            + (prev.energy < 0 ? -15 : 1)
-            + (emergency ? -10 : 0)
-          )),
-          xp: newXp,
-          level: newLevel
-        };
-      });
-    }, 3000);
-    return () => clearInterval(timer);
-  }, [buildings, gamePaused, isNight, emergency, policies, ecoScore, xpToNext, weather]);
-
-  const handleBuild = (typeObj) => {
+  const handleBuild = useCallback((typeObj) => {
     if (resources.money >= typeObj.cost) {
-      const newBuildings = [...buildings];
-      newBuildings[showBuildMenu] = { ...typeObj, uniqueId: Date.now() };
-      setBuildings(newBuildings);
-      setResources(prev => ({ ...prev, money: prev.money - typeObj.cost }));
+      dispatch({ type: 'BUILD', index: showBuildMenu, building: typeObj });
       setShowBuildMenu(null);
     }
-  };
+  }, [resources.money, showBuildMenu, dispatch]);
 
-  const handleDemolish = (index) => {
+  const handleDemolish = useCallback((index) => {
     if (resources.money >= 200) {
-      const newBuildings = [...buildings];
-      newBuildings[index] = null;
-      setBuildings(newBuildings);
-      setResources(prev => ({ ...prev, money: prev.money - 200 }));
+      dispatch({ type: 'DEMOLISH', index });
       setSelectedDetail(null);
     }
-  };
-
-  const resetGame = () => {
-    localStorage.removeItem(LOCAL_STORAGE_KEY);
-    setBuildings(Array(12).fill(null));
-    setResources({ money: 3500, energy: 50, pollution: 5, population: 100, happiness: 90, xp: 0, level: 1 });
-    setEmergency(null);
-    setIsNight(false);
-    setCurrentView('city');
-  };
+  }, [resources.money, dispatch]);
 
   const renderView = () => {
     switch (currentView) {
@@ -405,10 +413,10 @@ export default function App() {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '10px' }}>
               <div>
-                <h2 style={{ margin: 0 }}>
+                <h2 style={{ margin: 0, color: isNight ? '#10b981' : '#2e7d32' }}>
                   {isNight ? '🌙' : weather.icon} {isNight ? 'Night' : weather.name}
                 </h2>
-                <div style={{ fontSize: '0.8em', color: '#666' }}>Level {resources.level} Metropolis | {buildings.filter(b => b).length} Buildings</div>
+                <div style={{ fontSize: '0.8em', color: isNight ? '#94a3b8' : '#666' }}>Level {resources.level} Metropolis</div>
                 <div style={{ width: '150px' }}>
                    <div style={styles.xpBar}>
                      <div style={{ height: '100%', background: '#3b82f6', width: `${(resources.xp / xpToNext) * 100}%`, transition: 'width 0.3s' }} />
@@ -417,26 +425,21 @@ export default function App() {
               </div>
               <div style={{ textAlign: 'right' }}>
                 <div style={{ fontSize: '1.2em', fontWeight: 'bold', color: '#2e7d32' }}>${resources.money.toLocaleString()}</div>
-                <div style={{ fontSize: '0.7em', color: '#666' }}>Avg. Income: +${Math.round(resources.population * 0.9)}/tick</div>
+                <div style={{ fontSize: '0.7em', color: isNight ? '#94a3b8' : '#666' }}>Sustainability: {ecoScore}%</div>
               </div>
             </div>
             <div style={styles.cityGrid}>
               {buildings.map((b, i) => (
-                <div 
-                  key={i} 
-                  style={styles.buildingCard(!!b, isNight, !!emergency, weather.id)} 
-                  onClick={() => !b ? setShowBuildMenu(i) : setSelectedDetail({ ...b, gridIndex: i })}
-                >
-                  <div style={styles.buildingIcon}>{b ? b.icon : '🏗️'}</div>
-                  <strong style={{ fontSize: '0.85em' }}>{b ? b.name : 'Empty Lot'}</strong>
-                  {b ? (
-                    <div style={styles.badge(b.energy >= 0 ? (isNight && b.id === 'solar' ? '#f39c12' : '#4caf50') : '#f44336')}>
-                      {isNight && b.id === 'solar' ? 'OFFLINE' : `${b.energy > 0 ? '+' : ''}${Math.round(b.energy * (b.id === 'solar' ? weather.energyMod : (b.id === 'wind' ? weather.windMod : 1)))}⚡`}
-                    </div>
-                  ) : (
-                    <span style={{ fontSize: '0.7em', color: '#999' }}>Click to build</span>
-                  )}
-                </div>
+                <BuildingTile 
+                  key={b?.uniqueId || i}
+                  index={i}
+                  building={b}
+                  isNight={isNight}
+                  emergency={emergency}
+                  weather={weather}
+                  onBuild={setShowBuildMenu}
+                  onDetail={setSelectedDetail}
+                />
               ))}
             </div>
           </>
@@ -460,30 +463,20 @@ export default function App() {
               ))}
             </div>
             
-            <div style={styles.panel(isNight ? '#2c3e50' : '#f8fafc', isNight ? '#34495e' : '#e2e8f0')}>
+            <div style={styles.panel(isNight ? '#1e293b' : '#f8fafc', isNight ? '#334155' : '#e2e8f0')}>
                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                 <strong>Income History</strong>
-                 <span style={{ fontSize: '0.8em', color: '#666' }}>Last 20 ticks</span>
+                 <strong style={{ color: isNight ? '#fff' : 'inherit' }}>Income History</strong>
+                 <span style={{ fontSize: '0.8em', color: '#64748b' }}>Real-time Ticks</span>
                </div>
                <div style={{ height: '60px', display: 'flex', alignItems: 'flex-end', gap: '2px' }}>
                  {history.map((val, i) => (
                    <div key={i} style={{ 
                      flex: 1, 
-                     height: `${Math.min(100, (val / 1000) * 100)}%`, 
-                     background: val > 0 ? '#10b981' : '#ef4444',
+                     height: `${Math.min(100, (Math.abs(val) / 2000) * 100)}%`, 
+                     background: val >= 0 ? '#10b981' : '#ef4444',
                      borderRadius: '2px 2px 0 0'
                    }} />
                  ))}
-               </div>
-            </div>
-
-            <div style={styles.panel(isNight ? '#2c3e50' : '#f1f8e9', isNight ? '#34495e' : '#c5e1a5')}>
-               <div style={{ color: isNight ? '#fff' : '#2e7d32', display: 'flex', justifyContent: 'space-between' }}>
-                 <strong>Sustainability Index</strong>
-                 <span>{ecoScore}/100</span>
-               </div>
-               <div style={{ ...styles.xpBar, height: '12px', background: 'rgba(0,0,0,0.1)' }}>
-                 <div style={{ height: '100%', background: '#10b981', width: `${ecoScore}%`, transition: 'width 1s ease' }} />
                </div>
             </div>
           </>
@@ -492,20 +485,20 @@ export default function App() {
         return (
           <div style={{ padding: '10px' }}>
             <h2>City Ordinances</h2>
-            <div style={styles.panel('#fff', '#eee')}>
+            <div style={styles.panel(isNight ? '#1e293b' : '#fff', isNight ? '#334155' : '#eee')}>
               {[
                 { id: 'greenGrant', name: 'Rooftop Garden Subsidies', desc: 'Costs $200/tick, boosts Happiness +5', icon: '🌿' },
                 { id: 'carbonTax', name: 'Industrial Carbon Tax', desc: 'Income +$300, Pollution -2/tick', icon: '🧾' },
                 { id: 'nightLights', name: 'Smart Street Lighting', desc: 'Saves 10 Energy MW at night', icon: '💡' }
               ].map(p => (
-                <div key={p.id} style={styles.statRow}>
-                  <div>
+                <div key={p.id} style={{ ...styles.statRow, borderBottom: isNight ? '1px solid #334155' : '1px solid #f0f0f0' }}>
+                  <div style={{ color: isNight ? '#fff' : 'inherit' }}>
                     <strong>{p.icon} {p.name}</strong>
-                    <div style={{ fontSize: '0.8em', color: '#666' }}>{p.desc}</div>
+                    <div style={{ fontSize: '0.8em', color: '#64748b' }}>{p.desc}</div>
                   </div>
                   <button 
                     style={styles.navButton(policies[p.id])}
-                    onClick={() => setPolicies(prev => ({ ...prev, [p.id]: !prev[p.id] }))}
+                    onClick={() => dispatch({ type: 'TOGGLE_POLICY', policy: p.id })}
                   >
                     {policies[p.id] ? 'ENACTED' : 'ENACT'}
                   </button>
@@ -518,25 +511,25 @@ export default function App() {
         return (
           <div style={{ padding: '10px' }}>
             <h2>Global Settings</h2>
-            <div style={styles.panel('#fff', '#eee')}>
+            <div style={styles.panel(isNight ? '#1e293b' : '#fff', isNight ? '#334155' : '#eee')}>
               <div style={styles.statRow}>
-                <span>Simulation Active</span>
-                <button style={styles.navButton(!gamePaused)} onClick={() => setGamePaused(!gamePaused)}>
+                <span style={{ color: isNight ? '#fff' : 'inherit' }}>Simulation Engine</span>
+                <button style={styles.navButton(!gamePaused)} onClick={() => dispatch({ type: 'TOGGLE_PAUSE' })}>
                   {gamePaused ? 'RESUME' : 'PAUSE'}
                 </button>
               </div>
               <div style={styles.statRow}>
-                <span>Clear All Data</span>
+                <span style={{ color: isNight ? '#fff' : 'inherit' }}>Cloud Persistence</span>
                 <button 
-                  style={{ ...styles.navButton(false), backgroundColor: '#e74c3c', color: 'white' }} 
-                  onClick={() => window.confirm("Erase city and storage?") && resetGame()}
+                  style={{ ...styles.navButton(false), backgroundColor: '#ef4444', color: 'white' }} 
+                  onClick={() => window.confirm("Erase city and storage?") && dispatch({ type: 'RESET' })}
                 >
-                  RESET CITY
+                  PURGE DATA
                 </button>
               </div>
             </div>
-            <p style={{ fontSize: '0.7em', color: '#999', textAlign: 'center' }}>
-              Eco-City v2.5 | Performance: 60fps Target
+            <p style={{ fontSize: '0.7em', color: '#64748b', textAlign: 'center' }}>
+              Eco-City v3.0 Senior Architect Edition
             </p>
           </div>
         );
@@ -551,8 +544,8 @@ export default function App() {
           <h1 style={{ color: isNight ? '#10b981' : '#2e7d32', margin: 0, letterSpacing: '-1px' }}>
             🌱 ECO-CITY <span style={{ fontWeight: 300 }}>MANAGER</span>
           </h1>
-          <div style={{ fontSize: '0.8em', opacity: 0.7, color: isNight ? '#fff' : '#000' }}>
-            Metropolis saved to local browser storage
+          <div style={{ fontSize: '0.8em', opacity: 0.7, color: isNight ? '#94a3b8' : '#000' }}>
+            Senior State Engine Active | LocalStorage v3
           </div>
         </header>
         
@@ -564,7 +557,7 @@ export default function App() {
           ))}
         </nav>
 
-        <div style={styles.viewContainer}>
+        <div style={{ ...styles.viewContainer, background: isNight ? 'rgba(30, 41, 59, 0.7)' : 'rgba(255, 255, 255, 0.9)' }}>
           <style>{`
             @keyframes pulse {
               0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
@@ -582,7 +575,6 @@ export default function App() {
           </div>
         )}
 
-        {/* Build Selection Menu */}
         {showBuildMenu !== null && (
           <div style={styles.modalOverlay} onClick={() => setShowBuildMenu(null)}>
             <div style={styles.modalContent} onClick={e => e.stopPropagation()}>
@@ -616,20 +608,15 @@ export default function App() {
           </div>
         )}
 
-        {/* Building Details Modal */}
         {selectedDetail && (
           <div style={styles.modalOverlay} onClick={() => setSelectedDetail(null)}>
             <div style={styles.modalContent} onClick={e => e.stopPropagation()}>
               <div style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: '4rem' }}>{selectedDetail.icon}</div>
                 <h2 style={{ marginBottom: '5px' }}>{selectedDetail.name}</h2>
-                <div style={{ fontSize: '0.8em', color: '#666', marginBottom: '15px' }}>
-                   "Running at {Math.round(100 * (selectedDetail.id === 'solar' ? weather.energyMod : 1))}% efficiency."
-                </div>
                 <div style={styles.panel('#f9f9f9', '#eee')}>
-                  <div style={styles.statRow}><span>Power Capacity:</span> <strong>{selectedDetail.energy} MW</strong></div>
-                  <div style={styles.statRow}><span>Environmental:</span> <strong>{selectedDetail.pollution}</strong></div>
-                  {selectedDetail.housing > 0 && <div style={styles.statRow}><span>Housing:</span> <strong>{selectedDetail.housing}</strong></div>}
+                  <div style={styles.statRow}><span>Power:</span> <strong>{selectedDetail.energy} MW</strong></div>
+                  <div style={styles.statRow}><span>Eco-Impact:</span> <strong>{selectedDetail.pollution}</strong></div>
                 </div>
                 <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
                   <button style={{ ...styles.navButton(true), flex: 1 }} onClick={() => setSelectedDetail(null)}>BACK</button>
