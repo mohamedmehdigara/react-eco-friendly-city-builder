@@ -1,603 +1,267 @@
-// App.js
 import React, { useState, useEffect } from 'react';
-import City from './components/City';
-import ResourcePanel from './components/ResourcePanel';
-import PollutionMeter from './components/PollutionMeter';
-import EcoActions from './components/EcoActions';
-import GameOver from './components/GameOver';
-import TechnologyTree from './components/TechnologyTree';
-import EducationCenter from './components/EducationCenter'; // Import the EducationCenter component
-import CityExpansion from './components/CityExpansion';
-import Leaderboard from './components/Leaderboard';
-import HelpPage from './components/HelpPage';
-import WeatherDisplay from './components/WeatherDisplay';
-import SettingsPage from './components/SettingsPage';
-import CityMap from './components/CityMap';
-import AchievementsDisplay from './components/AchievementsDisplay';
-import NotificationCenter from './components/NotificationCenter';
-import ResourceManager from './components/ResourceManager';
-import ConstructionPanel from './components/ConstructionPanel';
-import EcoScoreDisplay from './components/EcoScoreDisplay';
-import BuildingInfoPanel from './components/BuildingInfoPanel';
-import PopulationPanel from './components/PopulationPanel';
 
-function ErrorBoundary({ children }) {
-  const [hasError, setHasError] = useState(false);
+// --- Integrated Styling Helper ---
+// Since external styled-components might have resolution issues in this environment,
+// we'll use a standard object-based styling approach with a helper to maintain the "Styled" feel.
 
-  const componentDidCatch = (error, errorInfo) => {
-    console.error('Error caught by error boundary:', error, errorInfo);
-    setHasError(true);
-  };
-
-  if (hasError) {
-    return (
-      <>
-        <h1>Something went wrong.</h1>
-        <p>Please refresh the page or contact support.</p>
-      </>
-    );
+const styles = {
+  global: {
+    margin: 0,
+    padding: 0,
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    backgroundColor: '#f0f4f0',
+    color: '#333',
+    minHeight: '100vh',
+  },
+  appContainer: {
+    maxWidth: '1200px',
+    margin: '0 auto',
+    padding: '20px',
+    textAlign: 'center',
+  },
+  nav: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: '10px',
+    marginBottom: '30px',
+    background: 'white',
+    padding: '15px',
+    borderRadius: '12px',
+    boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+  },
+  navButton: (active) => ({
+    backgroundColor: active ? '#2e7d32' : '#4CAF50',
+    color: 'white',
+    padding: '10px 18px',
+    border: 'none',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    fontSize: '0.9em',
+    fontWeight: active ? 'bold' : 'normal',
+    transition: 'all 0.3s ease',
+  }),
+  viewContainer: {
+    background: 'white',
+    padding: '30px',
+    borderRadius: '15px',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+    minHeight: '400px',
+  },
+  cityGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
+    gap: '20px',
+    marginTop: '20px',
+  },
+  buildingCard: (isEmpty) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '15px',
+    border: '2px solid #e0e0e0',
+    borderRadius: '12px',
+    background: isEmpty ? '#f9f9f9' : 'white',
+    transition: 'all 0.2s ease',
+    cursor: 'pointer',
+  }),
+  buildingIcon: {
+    fontSize: '2.5rem',
+    marginBottom: '10px',
+  },
+  panel: (bgColor, borderColor) => ({
+    borderRadius: '10px',
+    padding: '20px',
+    marginBottom: '20px',
+    textAlign: 'left',
+    border: `1px solid ${borderColor || '#ccc'}`,
+    backgroundColor: bgColor || '#fff',
+  }),
+  statRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '10px 0',
+    borderBottom: '1px solid rgba(0,0,0,0.05)',
+  },
+  resourceValue: {
+    fontWeight: 'bold',
+    color: '#2e7d32',
+  },
+  modal: {
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    background: 'white',
+    padding: '30px',
+    borderRadius: '15px',
+    boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+    zIndex: 1000,
+    width: '90%',
+    maxWidth: '400px',
+  },
+  overlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'rgba(0,0,0,0.5)',
+    zIndex: 999,
   }
+};
 
-  return children;
-}
+// --- Components ---
 
-function App() {
+const ResourcePanel = ({ resources }) => (
+  <div style={styles.panel('#e8f5e9', '#aed581')}>
+    <h3>Quick Overview</h3>
+    <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+      <div>💰 ${resources.money}</div>
+      <div>⚡ {resources.energy}MW</div>
+      <div>☁️ {resources.pollution}%</div>
+    </div>
+  </div>
+);
+
+const ResourceManager = ({ resources, onDetails }) => (
+  <div style={styles.panel('#f1f8e9', '#c5e1a5')}>
+    <h2>Detailed Resource Management</h2>
+    <div style={styles.statRow}>
+      <span>Finances:</span>
+      <span style={styles.resourceValue}>${resources.money}</span>
+      <button style={styles.navButton(false)} onClick={() => onDetails('Money')}>Details</button>
+    </div>
+    <div style={styles.statRow}>
+      <span>Energy Grid:</span>
+      <span style={styles.resourceValue}>{resources.energy} MW</span>
+      <button style={styles.navButton(false)} onClick={() => onDetails('Energy')}>Details</button>
+    </div>
+    <div style={styles.statRow}>
+      <span>Population:</span>
+      <span style={styles.resourceValue}>{resources.population}</span>
+      <button style={styles.navButton(false)} onClick={() => onDetails('Population')}>Details</button>
+    </div>
+  </div>
+);
+
+// --- Main App Logic ---
+
+export default function App() {
+  const [currentView, setCurrentView] = useState('city');
   const [resources, setResources] = useState({
     money: 10000,
     energy: 100,
-    // Add more resources as needed
+    pollution: 15,
+    population: 500,
+    happiness: 80
   });
 
-  const [pollutionLevel, setPollutionLevel] = useState(0);
-  const [isGameOver, setGameOver] = useState(false);
-  const [hasEducationCenter, setHasEducationCenter] = useState(false); // Track if the Education Center has been built
-  const [educationCenterUpgrades, setEducationCenterUpgrades] = useState({
-    courses: [
-      { id: 1, name: 'Advanced Environmental Science', level: 1 },
-      // Add more courses as needed
-    ],
-    workshops: [
-      { id: 1, name: 'Sustainable Architecture Workshop', level: 1 },
-      // Add more workshops as needed
-    ],
-    researchProjects: [
-      { id: 1, name: 'Renewable Energy Innovation', level: 1 },
-      // Add more research projects as needed
-    ],
-  });
-
-  const [technologies, setTechnologies] = useState({
-    cleanerEnergy: false,
-    advancedWasteManagement: false,
-    innovativeTransportation: false,
-  });
-
-  const [currentCityZone, setCurrentCityZone] = useState(1);
-  const [scores, setScores] = useState([
-    { id: 1, name: 'Player 1', score: 5000 },
-    { id: 2, name: 'Player 2', score: 4500 },
+  const [buildings, setBuildings] = useState([
+    { id: 1, name: 'Solar Farm', type: 'energy', icon: '☀️', cost: 2000 },
+    { id: 2, name: 'Eco-Apartments', type: 'housing', icon: '🏢', cost: 1500 },
+    { id: 3, name: 'City Park', type: 'eco', icon: '🌳', cost: 800 },
+    null, null, null // Empty slots
   ]);
 
-  const courses = []; // Define your courses array
-  const workshops = []; // Define your workshops array
-  const researchProjects = []; // Define your researchProjects array
+  const [selectedDetail, setSelectedDetail] = useState(null);
 
-  const ACTION_COST = 500;
-  const POLLUTION_INCREASE = 10;
-  const [showHelp, setShowHelp] = useState(false);
-  const [currentView, setCurrentView] = useState('city');
-   const cityStructure = [
-    { id: 1, name: 'Residential-1', area: 'a' },
-    { id: 2, name: 'Industrial', area: 'b' },
-    { id: 3, name: 'Commercial', area: 'c' },
-    { id: 4, name: 'Park', area: 'd' },
-    { id: 5, name: 'Residential-2', area: 'e' },
-  ];
-
-  const [achievements, setAchievements] = useState([
-    { id: 1, title: 'First Steps', description: 'Build your first residential zone.', isUnlocked: true },
-    { id: 2, title: 'Green Power', description: 'Generate 50 energy from renewable sources.', isUnlocked: false, progress: 75 },
-    { id: 3, title: 'Clean Air Initiative', description: 'Reduce pollution level to 10.', isUnlocked: false, progress: 30 },
-    { id: 4, title: 'City Planner', description: 'Expand your city to zone level 3.', isUnlocked: true },
-    { id: 5, title: 'Recycling Master', description: 'Recycle 500 units of waste.', isUnlocked: false, progress: 15 },
-  ]);
-
-
- const [notifications, setNotifications] = useState([
-    { id: 1, message: 'Welcome to Eco-topia!', type: 'success', timestamp: Date.now() - 10000, icon: '🎉' },
-    { id: 2, message: 'Low energy levels detected.', type: 'warning', timestamp: Date.now() - 5000, icon: '⚠️' },
-    { id: 3, message: 'Residential zone built successfully.', type: 'info', timestamp: Date.now(), icon: '🏠' },
-  ]);
-
-    const [showResourceDetails, setShowResourceDetails] = useState(null); // State for showing resource details
-
-  const [availableBuildings, setAvailableBuildings] = useState([
-    { id: 1, name: 'Solar Panel', cost: 200 },
-    { id: 2, name: 'Wind Turbine', cost: 350 },
-    { id: 3, name: 'Residential Zone', cost: 150 },
-  ]);
-
-  const [ecoScoreData, setEcoScoreData] = useState({
-    pollutionReduction: { label: 'Pollution Reduced', value: 65, weight: 0.4 },
-    renewableEnergy: { label: 'Renewable Energy', value: 80, weight: 0.3 },
-    biodiversity: { label: 'Biodiversity Level', value: 70, weight: 0.3 },
-    wasteRecycling: { label: 'Waste Recycled', value: 90, weight: 0.2 },
-  });
-
-  const [selectedBuilding, setSelectedBuilding] = useState(null);
-  const cityBuildings = [
-    { id: 1, name: 'Solar Farm', function: 'Generates clean energy', production: { energy: 50 }, pollution: -5, upgrades: [{ id: 101, name: 'Efficiency Boost', effect: '+10 energy' }] },
-    { id: 2, name: 'Residential Block', function: 'Provides housing', consumption: { energy: 5, water: 10 }, effects: [{ id: 201, name: 'Happy Residents', description: '+5% city growth' }] },
-    { id: 3, name: 'Coal Power Plant', function: 'Generates energy', production: { energy: 100 }, pollution: 20 },
-  ];
-
-   const [populationData, setPopulationData] = useState({
-    totalPopulation: 1500,
-    happiness: 85,
-    growthRate: 1.5,
-    employmentRate: 92,
-  });
-
-  const handleEcoAction = (actionType) => {
-    if (resources.money >= ACTION_COST) {
-      setResources((prevResources) => ({
-        ...prevResources,
-        money: prevResources.money - ACTION_COST,
-      }));
-
-      setPollutionLevel((prevLevel) => prevLevel + POLLUTION_INCREASE);
-    }
-  };
-
-  const handleGameOver = () => {
-    if (pollutionLevel >= 50) {
-      setGameOver(true);
-    }
-  };
-
-  const handleRestart = () => {
-    setResources({
-      money: 10000,
-      energy: 100,
-    });
-
-    setPollutionLevel(0);
-    setGameOver(false);
-    setHasEducationCenter(false); // Reset Education Center status
-    setCurrentView('city'); // Reset the current view to city
-  };
-
-  const handleBuildEducationCenter = () => {
-    console.log('Building Education Center...');
-    // Implement logic to build the Education Center
-    // Adjust resources, setHasEducationCenter, or perform other actions
-    setHasEducationCenter((prevHasEducationCenter) => {
-      const newHasEducationCenter = !prevHasEducationCenter;
-      console.log('Education Center built. hasEducationCenter:', newHasEducationCenter);
-      return newHasEducationCenter;
-    });
-  };
-
-  const handleUpgrade = (type, itemId) => {
-    // Modify your upgrade function to handle the undefined case
-    // Get the appropriate array based on the type
-    const targetArray = type === 'course' ? courses : type === 'workshop' ? workshops : researchProjects;
-
-    // Check if the array is defined before using findIndex
-    if (targetArray) {
-      const index = targetArray.findIndex((item) => item.id === itemId);
-
-      if (index !== -1) {
-        // Implement your upgrade logic using the index
-        // ...
-      } else {
-        console.error(`Item with id ${itemId} not found in the array`);
-      }
-    } else {
-      console.error('Target array is undefined');
-    }
-
-    setEducationCenterUpgrades((prevUpgrades) => {
-      const updatedUpgrades = { ...prevUpgrades };
-      const upgradeType = updatedUpgrades[type];
-      const index = upgradeType.findIndex((item) => item.id === itemId);
-      if (index !== -1) {
-        upgradeType[index].level += 1;
-      }
-      return updatedUpgrades;
-    });
-  };
-
-  const handleResearch = (technology, itemId) => {
-    // Implement logic to research a technology
-    // Deduct research points, unlock technology, or perform other actions
-    const researchCost = getResearchCost(technology);
-
-    if (resources.researchPoints >= researchCost) {
-      setResources((prevResources) => ({
-        ...prevResources,
-        researchPoints: prevResources.researchPoints - researchCost,
-      }));
-
-      setTechnologies((prevTechnologies) => ({
-        ...prevTechnologies,
-        [technology]: true,
-      }));
-
-      setEducationCenterUpgrades((prevUpgrades) => {
-        const updatedUpgrades = { ...prevUpgrades };
-        const researchIndex = updatedUpgrades.researchProjects.findIndex((project) => project.id === itemId);
-        if (researchIndex !== -1) {
-          // Implement logic to handle research completion and unlock new technologies
-          // For example, update the city's available technologies state
-          // setAvailableTechnologies((prevTechnologies) => [...prevTechnologies, newTechnology]);
-          // You can also update resources or other game mechanics
-        }
-        return updatedUpgrades;
-      });
-    }
-  };
-
-  const getResearchCost = (technology) => {
-    // You can implement a function to determine the research cost based on game balance
-    // For simplicity, let's assume a constant cost for each technology
-    return 100; // Adjust this value based on your game design
-  };
-
-  const handleCityExpansion = () => {
-    // ... logic for city expansion
-    setCurrentCityZone((prevCityZone) => prevCityZone + 1);
-  };
-
-  const updateScores = (playerId, newScore) => {
-    setScores((prevScores) =>
-      prevScores.map((score) => (score.id === playerId ? { ...score, score: newScore } : score))
-    );
-  };
-
-  const containerStyle = {
-    textAlign: 'center',
-    maxWidth: '800px',
-    margin: 'auto',
-  };
-
-  const generateRandomWeather = () => {
-    const weatherOptions = ['Sunny', 'Cloudy', 'Rainy'];
-    const randomIndex = Math.floor(Math.random() * weatherOptions.length);
-    return weatherOptions[randomIndex];
-  };
-
-    const [weather, setWeather] = useState(generateRandomWeather()); // Initialize weather with a random value
-
-
-  const handleRandomWeatherEvent = () => {
-    const newWeather = generateRandomWeather();
-    setWeather(newWeather);
-  };
-
-  const handleToggleHelp = () => {
-    setShowHelp(!showHelp);
-  };
-
-  const cityName = 'Eco-topia';
-
-  const handleNavigate = (view) => {
-    setCurrentView(view);
-  };
-
+  // Game Loop simulation
   useEffect(() => {
-    if (/* condition to unlock Green Power */ true) {
-      setAchievements(prev => prev.map(ach =>
-        ach.id === 2 ? { ...ach, isUnlocked: true, progress: 100 } : ach
-      ));
-    }
-    // ... more logic to update achievements based on game state
-  }, []);
-
-  useEffect(() => {
-    // Example: Adding a new notification after a delay
-    const newNotificationTimeout = setTimeout(() => {
-      setNotifications(prev => [
+    const timer = setInterval(() => {
+      setResources(prev => ({
         ...prev,
-        { id: Date.now(), message: 'Pollution levels slightly increased.', type: 'warning', timestamp: Date.now(), icon: '🏭' },
-      ]);
-    }, 15000);
+        money: prev.money + 50,
+        energy: prev.energy + (buildings.filter(b => b?.type === 'energy').length * 10)
+      }));
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [buildings]);
 
-    return () => clearTimeout(newNotificationTimeout);
-  }, []);
-
-  const handleResourceDetails = (resourceName) => {
-    console.log(`Showing details for ${resourceName}`);
-    setShowResourceDetails(resourceName); // Set the state to show details
+  const build = (index) => {
+    if (resources.money >= 1000) {
+      const newBuildings = [...buildings];
+      newBuildings[index] = { id: Date.now(), name: 'Wind Turbine', type: 'energy', icon: '🌬️', cost: 1000 };
+      setBuildings(newBuildings);
+      setResources(prev => ({ ...prev, money: prev.money - 1000 }));
+    }
   };
 
-  // Add this function:
-  const renderResourceDetails = () => {
-    if (!showResourceDetails) return null;
-
-    switch (showResourceDetails) {
-      case 'money':
+  const renderView = () => {
+    switch (currentView) {
+      case 'city':
         return (
-          <div style={{  }}>
-            <h3>Money Details</h3>
-            <p>Current balance: ${resources.money}</p>
-            <p>Income sources: ...</p>
-            <p>Expenses: ...</p>
-            <button onClick={() => setShowResourceDetails(null)}>Close</button>
-          </div>
-        );
-      case 'energy':
-        return (
-          <div style={{  }}>
-            <h3>Energy Details</h3>
-            <p>Current energy level: {resources.energy} MW</p>
-            <p>Production sources: ...</p>
-            <p>Consumption: ...</p>
-             <button onClick={() => setShowResourceDetails(null)}>Close</button>
-          </div>
-        );
-      case 'pollution':
-          return(
-            <div style={{}}>
-              <h3>Pollution Details</h3>
-              <p>Pollution level: {resources.pollutionLevel}</p>
-              <p>Pollution Sources: ... </p>
-              <p> Effects: ...</p>
-              <button onClick={() => setShowResourceDetails(null)}>Close</button>
+          <>
+            <h2>Your Eco-City</h2>
+            <div style={styles.cityGrid}>
+              {buildings.map((b, i) => (
+                <div 
+                  key={i} 
+                  style={styles.buildingCard(!b)} 
+                  onClick={() => !b && build(i)}
+                >
+                  <div style={styles.buildingIcon}>{b ? b.icon : '🏗️'}</div>
+                  <strong>{b ? b.name : 'Empty Lot'}</strong>
+                  {!b && <small>Click to Build ($1000)</small>}
+                </div>
+              ))}
             </div>
-          );
-      default:
-        return null;
-    }
-  };
-
-   const handleConstruct = (building) => {
-    if (resources.money >= building.cost) {
-      console.log(`Constructing: ${building.name}`);
-      setResources((prevResources) => ({
-        ...prevResources,
-        money: prevResources.money - building.cost,
-      }));
-      // Implement logic to actually place the building in the city
-    } else {
-      console.log(`Insufficient funds to build ${building.name}`);
-      // Optionally display a notification to the player
-    }
-  };
-
-  useEffect(() => {
-    // Example: Updating pollution reduction over time
-    const interval = setInterval(() => {
-      setEcoScoreData((prevData) => ({
-        ...prevData,
-        pollutionReduction: {
-          ...prevData.pollutionReduction,
-          value: Math.min(100, prevData.pollutionReduction.value + 1),
-        },
-      }));
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-
-const handleBuildingSelect = (buildingId) => {
-    const building = cityBuildings.find((b) => b.id === buildingId);
-    setSelectedBuilding(building);
-  };
-
-
-  return (
-    <ErrorBoundary>
-      <div style={containerStyle}>
-        <h1>Eco-Friendly City Builder</h1>
-        <nav >
-          <button style={{
-  backgroundColor: "#4CAF50", /* Green */
-  color: "white",
-  padding: "10px 15px",
-  margin: "5px",
-  border: "none",
-  borderRadius: "5px",
-  cursor: "pointer",
-  fontSize: "0.9em",
-  transition: "background-color 0.3s ease",
-}} onClick={() => handleNavigate('city')}>City</button>
-          <button style={{
-  backgroundColor: "#4CAF50", /* Green */
-  color: "white",
-  padding: "10px 15px",
-  margin: "5px",
-  border: "none",
-  borderRadius: "5px",
-  cursor: "pointer",
-  fontSize: "0.9em",
-  transition: "background-color 0.3s ease",
-}} onClick={() => handleNavigate('resources')}>Resources</button>
-          <button style={{
-  backgroundColor: "#4CAF50", /* Green */
-  color: "white",
-  padding: "10px 15px",
-  margin: "5px",
-  border: "none",
-  borderRadius: "5px",
-  cursor: "pointer",
-  fontSize: "0.9em",
-  transition: "background-color 0.3s ease",
-}} onClick={() => handleNavigate('pollution')}>Pollution</button>
-          <button style={{
-  backgroundColor: "#4CAF50", /* Green */
-  color: "white",
-  padding: "10px 15px",
-  margin: "5px",
-  border: "none",
-  borderRadius: "5px",
-  cursor: "pointer",
-  fontSize: "0.9em",
-  transition: "background-color 0.3s ease",
-}} onClick={() => handleNavigate('ecoActions')}>Eco Actions</button>
-          <button style={{
-  backgroundColor: "#4CAF50", /* Green */
-  color: "white",
-  padding: "10px 15px",
-  margin: "5px",
-  border: "none",
-  borderRadius: "5px",
-  cursor: "pointer",
-  fontSize: "0.9em",
-  transition: "background-color 0.3s ease",
-}} onClick={() => handleNavigate('technology')}>Technology</button>
-          <button style={{
-  backgroundColor: "#4CAF50", /* Green */
-  color: "white",
-  padding: "10px 15px",
-  margin: "5px",
-  border: "none",
-  borderRadius: "5px",
-  cursor: "pointer",
-  fontSize: "0.9em",
-  transition: "background-color 0.3s ease",
-}} onClick={() => handleNavigate('education')}>Education</button>
-          <button style={{
-  backgroundColor: "#4CAF50", /* Green */
-  color: "white",
-  padding: "10px 15px",
-  margin: "5px",
-  border: "none",
-  borderRadius: "5px",
-  cursor: "pointer",
-  fontSize: "0.9em",
-  transition: "background-color 0.3s ease",
-}} onClick={() => handleNavigate('expansion')}>Expansion</button>
-          <button style={{
-  backgroundColor: "#4CAF50", /* Green */
-  color: "white",
-  padding: "10px 15px",
-  margin: "5px",
-  border: "none",
-  borderRadius: "5px",
-  cursor: "pointer",
-  fontSize: "0.9em",
-  transition: "background-color 0.3s ease",
-}} onClick={() => handleNavigate('leaderboard')}>Leaderboard</button>
-          <button style={{
-  backgroundColor: "#4CAF50", /* Green */
-  color: "white",
-  padding: "10px 15px",
-  margin: "5px",
-  border: "none",
-  borderRadius: "5px",
-  cursor: "pointer",
-  fontSize: "0.9em",
-  transition: "background-color 0.3s ease",
-}} onClick={() => handleNavigate('help')}>Help</button>
-          <button style={{
-  backgroundColor: "#4CAF50", /* Green */
-  color: "white",
-  padding: "10px 15px",
-  margin: "5px",
-  border: "none",
-  borderRadius: "5px",
-  cursor: "pointer",
-  fontSize: "0.9em",
-  transition: "background-color 0.3s ease",
-}} onClick={() => handleNavigate('weather')}>Weather</button>
-          <button style={{
-  backgroundColor: "#4CAF50", /* Green */
-  color: "white",
-  padding: "10px 15px",
-  margin: "5px",
-  border: "none",
-  borderRadius: "5px",
-  cursor: "pointer",
-  fontSize: "0.9em",
-  transition: "background-color 0.3s ease",
-}} onClick={() => handleNavigate('settings')}>Settings</button>
-          <button style={{
-  backgroundColor: "#4CAF50", /* Green */
-  color: "white",
-  padding: "10px 15px",
-  margin: "5px",
-  border: "none",
-  borderRadius: "5px",
-  cursor: "pointer",
-  fontSize: "0.9em",
-  transition: "background-color 0.3s ease",
-}} onClick={() => handleNavigate('achievements')}>Your Achievements</button>
-
-          
-      
-        </nav>
-
-        <h1>Your City</h1>
-      <NotificationCenter notifications={notifications} />
-       <h1>City Construction</h1>
-      <ConstructionPanel
-        availableBuildings={availableBuildings}
-        onConstructBuilding={handleConstruct}
-        resources={resources}
-      />
-
-       <h1>City Health</h1>
-      <EcoScoreDisplay ecoScoreData={ecoScoreData} />
-
-      <h1>City View</h1>
-      {/* Render your city tiles/elements here, making them clickable to call handleBuildingSelect */}
-      <div onClick={() => handleBuildingSelect(1)}>Solar Farm</div>
-      <div onClick={() => handleBuildingSelect(2)}>Residential Block</div>
-      <div onClick={() => handleBuildingSelect(3)}>Coal Power Plant</div>
-
-      <h2>Building Information</h2>
-      <BuildingInfoPanel building={selectedBuilding} />
-
-       {currentView === 'resources' && (
+          </>
+        );
+      case 'resources':
+        return (
           <>
             <ResourcePanel resources={resources} />
-            <ResourceManager resources={resources} onResourceDetails={handleResourceDetails} />
-            {renderResourceDetails()}
+            <ResourceManager 
+              resources={resources} 
+              onDetails={(type) => setSelectedDetail(type)} 
+            />
+          </>
+        );
+      case 'pollution':
+        return (
+          <div style={styles.panel('#fff3e0', '#ffe0b2')}>
+            <h2>Pollution Tracker</h2>
+            <div style={{ fontSize: '3rem' }}>{resources.pollution >= 50 ? '⚠️' : '✅'}</div>
+            <p>Current Levels: {resources.pollution}%</p>
+            <progress value={resources.pollution} max="100" style={{ width: '100%' }} />
+          </div>
+        );
+      default:
+        return <div>View under construction...</div>;
+    }
+  };
+
+  return (
+    <div style={styles.global}>
+      <div style={styles.appContainer}>
+        <h1>🌱 Eco-City Builder</h1>
+        
+        <nav style={styles.nav}>
+          <button style={styles.navButton(currentView === 'city')} onClick={() => setCurrentView('city')}>City Map</button>
+          <button style={styles.navButton(currentView === 'resources')} onClick={() => setCurrentView('resources')}>Resources</button>
+          <button style={styles.navButton(currentView === 'pollution')} onClick={() => setCurrentView('pollution')}>Pollution</button>
+          <button style={styles.navButton(currentView === 'tech')} onClick={() => setCurrentView('tech')}>Technology</button>
+          <button style={styles.navButton(currentView === 'achievements')} onClick={() => setCurrentView('achievements')}>Achievements</button>
+          <button style={styles.navButton(currentView === 'settings')} onClick={() => setCurrentView('settings')}>Settings</button>
+        </nav>
+
+        <div style={styles.viewContainer}>
+          {renderView()}
+        </div>
+
+        {selectedDetail && (
+          <>
+            <div style={styles.overlay} onClick={() => setSelectedDetail(null)} />
+            <div style={styles.modal}>
+              <h2>{selectedDetail} Analysis</h2>
+              <p>Detailed breakdown of your city's {selectedDetail.toLowerCase()} metrics and projections.</p>
+              <button style={styles.navButton(true)} onClick={() => setSelectedDetail(null)}>Close Analysis</button>
+            </div>
           </>
         )}
-
-        {currentView === 'city' && (
-          <City
-            onGameOver={handleGameOver}
-            resources={resources}
-            setResources={setResources}
-            setPollutionLevel={setPollutionLevel}
-            hasEducationCenter={hasEducationCenter}
-            onBuildEducationCenter={handleBuildEducationCenter}
-          />
-        )}
-        <AchievementsDisplay achievements={achievements} />
-        {currentView === 'resources' && <ResourcePanel resources={resources} />}
-                              <PopulationPanel populationData={populationData} />
-
-        {currentView === 'pollution' && <PollutionMeter pollutionLevel={pollutionLevel} />}
-        {currentView === 'ecoActions' && <EcoActions onEcoAction={handleEcoAction} onBuildEducationCenter={handleBuildEducationCenter} />}
-        {currentView === 'technology' && <TechnologyTree technologies={technologies} onResearch={handleResearch} />}
-        {currentView === 'education' && (
-          <EducationCenter
-            onBuildEducationCenter={handleBuildEducationCenter}
-            onUpgrade={handleUpgrade}
-            onResearch={handleResearch}
-            courses={educationCenterUpgrades.courses}
-            workshops={educationCenterUpgrades.workshops}
-            researchProjects={educationCenterUpgrades.researchProjects}
-          />
-        )}
-        {currentView === 'expansion' && <CityExpansion currentCityZone={currentCityZone} onCityExpansion={handleCityExpansion} />}
-        {currentView === 'leaderboard' && <Leaderboard scores={scores} />}
-        {currentView === 'help' && <HelpPage />}
-        {currentView === 'weather' && <WeatherDisplay city={cityName} />}
-        {currentView === 'settings' && <SettingsPage />}
-
-        {isGameOver && <GameOver score={resources.money} onRestart={handleRestart} />}
-                <CityMap cityZones={cityStructure} />
-
-
       </div>
-    </ErrorBoundary>
+    </div>
   );
 }
-
-export default App;
