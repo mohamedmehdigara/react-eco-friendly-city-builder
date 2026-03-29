@@ -1,290 +1,411 @@
-import React, { useReducer, useEffect, useState } from 'react';
+import React, { useReducer, useEffect, useState, useMemo } from 'react';
 
-// --- Constants & Configuration ---
+// --- Constants ---
 const TICK_RATE = 2000;
-const REGIONS = {
-  SURFACE: { id: 'surface', name: 'Surface Core', icon: '🌍', color: 'blue' },
-  SUBSURFACE: { id: 'subsurface', name: 'Geo-Vaults', icon: '🌋', color: 'orange' },
-  ORBIT: { id: 'orbit', name: 'Orbital Ring', icon: '🛰️', color: 'indigo' }
-};
-
-const SPECIALIZATIONS = {
-  NONE: { id: 'none', name: 'Neutral', buff: 'No active modifiers', effect: {} },
-  INDUSTRIAL: { id: 'ind', name: 'Industrial', buff: '+20% Jobs, +10% Pollution', effect: { jobs: 1.2, pollution: 1.1 } },
-  ECOLOGICAL: { id: 'eco', name: 'Eco-Park', buff: '-30% Pollution, -10% Energy', effect: { pollution: 0.7, energy: 0.9 } },
-  RESIDENTIAL: { id: 'res', name: 'Urban Hub', buff: '+25% Housing, +10% Water Req', effect: { housing: 1.25, water: 1.1 } }
-};
+const MARKET_REFRESH_RATE = 10000;
+const DAY_LENGTH = 30; 
+const TERRAFORM_TARGET = 10000;
+const DISASTER_CHANCE = 0.04;
+const PETITION_CHANCE = 0.08;
 
 const BUILDING_DATA = {
-  SOLAR: { id: 'solar', name: 'Solar Array', icon: '☀️', cost: 1200, energy: 50, water: -5, pollution: -2, jobs: 5, region: ['surface', 'orbit'] },
-  WIND: { id: 'wind', name: 'Wind Turbine', icon: '🌬️', cost: 950, energy: 35, water: 0, pollution: -1, jobs: 3, region: ['surface'] },
-  HABITAT: { id: 'habitat', name: 'Eco-Habitat', icon: '🏘️', cost: 1600, energy: -25, water: -30, food: -15, pollution: 2, housing: 60, jobs: 0, region: ['surface', 'subsurface'] },
-  FARM: { id: 'farm', name: 'Vertical Farm', icon: '🥬', cost: 2400, energy: -40, water: -50, food: 110, pollution: -5, jobs: 20, region: ['surface', 'subsurface'] },
-  WELL: { id: 'well', name: 'Atmospheric Well', icon: '💧', cost: 2000, energy: -35, water: 150, pollution: -3, jobs: 10, region: ['surface'] },
-  RECYCLE: { id: 'recycle', name: 'Plasma Recycler', icon: '♻️', cost: 4200, energy: -60, water: -30, pollution: -40, jobs: 30, region: ['surface', 'subsurface'] },
-  FUSION: { id: 'fusion', name: 'Fusion Core', icon: '⚛️', cost: 18000, energy: 1200, water: -200, pollution: -5, jobs: 80, region: ['surface', 'orbit'] },
+  SOLAR: { id: 'solar', name: 'Solar Array', icon: '☀️', cost: 1200, energy: 60, water: -5, pollution: -2, region: ['surface', 'orbit'] },
+  HABITAT: { id: 'habitat', name: 'Eco-Habitat', icon: '🏘️', cost: 1600, energy: -25, water: -30, food: -15, pollution: 2, housing: 80, region: ['surface', 'subsurface'] },
+  FARM: { id: 'farm', name: 'Vertical Farm', icon: '🥬', cost: 2400, energy: -40, water: -60, food: 120, pollution: -5, region: ['surface', 'subsurface'] },
+  WELL: { id: 'well', name: 'Atmospheric Well', icon: '💧', cost: 2000, energy: -35, water: 180, pollution: -3, region: ['surface'] },
+  LAB: { id: 'lab', name: 'Research Lab', icon: '🧪', cost: 8000, energy: -120, water: -30, xp: 350, region: ['surface', 'subsurface', 'orbit'] },
+  SHIELD: { id: 'shield', name: 'Shield Gen', icon: '🛡️', cost: 15000, energy: -300, defense: 0.8, region: ['surface', 'subsurface', 'orbit'] },
+  DRONE_HUB: { id: 'drone', name: 'Logistics Hub', icon: '🚁', cost: 18000, energy: -200, tradeBonus: 0.35, region: ['surface', 'orbit'] },
+  SPACEPORT: { id: 'spaceport', name: 'Interstellar Port', icon: '🚀', cost: 35000, energy: -600, prestige: 35, region: ['orbit'] },
+  STABILIZER: { id: 'stabilizer', name: 'Quantum Stabilizer', icon: '🌀', cost: 14000, energy: -150, glitchResistance: 0.6, region: ['surface', 'subsurface', 'orbit'] }
 };
 
+const EDICTS = [
+  { id: 'green_tax', name: 'Green Tax', icon: '🍃', effect: 'Pollution -25%, Happiness -12', cost: 5000 },
+  { id: 'overclock', name: 'Overclock Labs', icon: '⚡', effect: 'XP +60%, Energy -150', cost: 12000 },
+  { id: 'martial_law', name: 'Martial Law', icon: '🎖️', effect: 'Stability Decay -50%, Happiness -40', cost: 20000 }
+];
+
+const DISASTERS = {
+  surface: { name: 'Acid Rain', icon: '🌧️', damage: 8, color: 'text-green-400' },
+  subsurface: { name: 'Crustal Shake', icon: '🌋', damage: 12, color: 'text-orange-500' },
+  orbit: { name: 'Solar Flare', icon: '💥', damage: 15, color: 'text-yellow-500' }
+};
+
+const PETITION_TEMPLATES = [
+  { id: 'rationing', title: 'Food Rationing', text: 'Supplies are low. Should we enforce strict rationing?', options: [
+    { label: 'Enforce (+Food, -Happiness)', effect: { food: 500, happiness: -15 } },
+    { label: 'Subsidize (-Money, +Happiness)', effect: { money: -5000, happiness: 10 } }
+  ]},
+  { id: 'energy_leak', title: 'Power Grid Leak', text: 'A major leak is detected. Divert funds to fix it immediately?', options: [
+    { label: 'Repair (-Money)', effect: { money: -8000 } },
+    { label: 'Ignore (-Energy, +Pollution)', effect: { energy: -400, pollution: 10 } }
+  ]},
+  { id: 'migration', title: 'Orbital Refugees', text: 'A transport ship is requesting emergency docking.', options: [
+    { label: 'Accept (+Pop, -Food)', effect: { population: 100, food: -300 } },
+    { label: 'Refuse (-Prestige)', effect: { prestige: -10 } }
+  ]}
+];
+
 const initialState = {
-  city: {
-    level: 1,
-    xp: 0,
-    activeRegion: 'surface',
-    grids: { surface: Array(16).fill(null), subsurface: Array(16).fill(null), orbit: Array(16).fill(null) },
-    specializations: { surface: 'none', subsurface: 'none', orbit: 'none' },
-    activePolicies: [],
-    unlockedTechs: [],
-  },
-  resources: {
-    money: 25000,
-    energy: 500,
-    water: 500,
-    food: 500,
-    pollution: 15,
-    population: 150,
-    happiness: 90,
-  },
-  market: { energyPrice: 12, waterPrice: 8, foodPrice: 15 },
+  city: { level: 1, xp: 0, activeRegion: 'surface', grids: { surface: Array(16).fill(null), subsurface: Array(16).fill(null), orbit: Array(16).fill(null) } },
+  resources: { money: 120000, energy: 4000, water: 2500, food: 2500, pollution: 5, population: 250, happiness: 90, prestige: 0, terraformProgress: 0 },
+  market: { energy: 15, water: 10, food: 20 },
+  activeEdicts: [],
+  glitches: [],
+  activeDisaster: null,
+  activePetition: null,
   gamePaused: false,
+  tickCount: 0,
+  logs: ["Metropolis Core Online. Monitoring neural link..."]
 };
 
 function gameReducer(state, action) {
-  if (state.gamePaused && action.type !== 'TOGGLE_PAUSE') return state;
+  if (state.gamePaused && action.type !== 'TOGGLE_PAUSE' && action.type !== 'RESOLVE_PETITION') return state;
 
   switch (action.type) {
     case 'TICK': {
-      const { city, resources } = state;
-      let net = { energy: 0, water: 0, food: 0, pollution: 0, housing: 0, jobs: 0 };
+      const { resources, city, tickCount, activeEdicts, glitches, activeDisaster, activePetition } = state;
+      const isNight = (tickCount % DAY_LENGTH) > (DAY_LENGTH / 2);
+      let net = { energy: 0, water: 0, food: 0, pollution: 0, housing: 0, xp: 50, tradeBonus: 0, prestige: 0, glitchResistance: 0, defense: 0 };
+      const newGrids = { ...city.grids };
+      const newLogs = [...state.logs].slice(-5);
 
-      Object.keys(city.grids).forEach(rId => {
-        const specId = city.specializations[rId];
-        const spec = SPECIALIZATIONS[specId.toUpperCase()] || SPECIALIZATIONS.NONE;
-        
-        city.grids[rId].forEach(b => {
-          if (!b) return;
-          let bE = b.energy || 0;
-          let bP = b.pollution || 0;
-          let bH = b.housing || 0;
-          let bJ = b.jobs || 0;
+      // 1. Disaster/Petition Triggers
+      let updatedDisaster = activeDisaster ? { ...activeDisaster, timer: activeDisaster.timer - 1 } : null;
+      if (updatedDisaster && updatedDisaster.timer <= 0) updatedDisaster = null;
 
-          // Apply specializations
-          if (spec.effect.energy) bE *= spec.effect.energy;
-          if (spec.effect.pollution) bP *= spec.effect.pollution;
-          if (spec.effect.housing) bH *= spec.effect.housing;
-          if (spec.effect.jobs) bJ *= spec.effect.jobs;
+      let newPetition = activePetition;
+      if (!updatedDisaster && !newPetition && Math.random() < DISASTER_CHANCE) {
+        const region = ['surface', 'subsurface', 'orbit'][Math.floor(Math.random() * 3)];
+        updatedDisaster = { region, timer: 6 };
+        newLogs.push(`SYSTEM ALERT: ${DISASTERS[region].name} in ${region}!`);
+      }
 
-          net.energy += bE;
-          net.water += b.water || 0;
-          net.food += b.food || 0;
-          net.pollution += bP;
-          net.housing += bH;
-          net.jobs += bJ;
+      if (!newPetition && Math.random() < PETITION_CHANCE) {
+        newPetition = PETITION_TEMPLATES[Math.floor(Math.random() * PETITION_TEMPLATES.length)];
+      }
+
+      // 2. Grid Logic
+      Object.keys(newGrids).forEach(rId => {
+        const isDisasterHit = updatedDisaster?.region === rId;
+        newGrids[rId] = newGrids[rId].map((b, idx) => {
+          if (!b) return null;
+          const isGlitched = glitches.some(g => g.region === rId && g.index === idx);
+          if (isGlitched) { net.pollution += 2; return b; }
+
+          let decay = (rId === 'subsurface' ? 0.7 : 0.4);
+          if (activeEdicts.includes('martial_law')) decay *= 0.5;
+          if (isDisasterHit) decay += DISASTERS[rId].damage;
+
+          const newStability = Math.max(0, b.stability - (decay * (1 - net.defense/10)));
+          if (newStability > 0) {
+            let eff = 1.0;
+            if (b.id === 'solar') eff = isNight && rId === 'surface' ? 0.1 : 1.4;
+            if (rId === 'orbit') eff *= 1.5;
+            
+            net.energy += (b.energy || 0) * eff;
+            net.water += (b.water || 0);
+            net.food += (b.food || 0);
+            net.pollution += (b.pollution || 0) * (activeEdicts.includes('green_tax') ? 0.75 : 1);
+            net.housing += (b.housing || 0);
+            net.xp += (b.xp || 0) * (activeEdicts.includes('overclock') ? 1.5 : 1);
+            net.tradeBonus += (b.tradeBonus || 0);
+            net.prestige += (b.prestige || 0);
+            net.defense = Math.min(8, net.defense + (b.defense || 0));
+          } else if (b.stability > 0) {
+             newLogs.push(`CRITICAL: Structure lost in ${rId}.`);
+          }
+          return { ...b, stability: newStability };
         });
       });
 
-      const pop = Math.max(150, Math.floor(net.housing + 100));
-      const consumption = { energy: pop * 0.2, water: pop * 0.3, food: pop * 0.25 };
-      const revenue = Math.floor(pop * (resources.happiness / 100) * 5);
-      
-      let newLevel = city.level;
-      let newXp = city.xp + 25;
-      if (newXp >= 1000 * city.level) { newXp = 0; newLevel++; }
+      const pop = Math.floor(net.housing + 250);
+      let revenue = (pop * 25 * (resources.happiness / 100)) * (1 + net.tradeBonus) + (net.prestige * 100);
+      const terraformTick = resources.pollution < 15 ? 15 : resources.pollution > 40 ? -5 : 0;
+      const happinessMod = (resources.pollution > 55 ? -1.5 : 0.4) + (activeEdicts.includes('martial_law') ? -2.0 : 0);
 
       return {
         ...state,
-        city: { ...city, xp: newXp, level: newLevel },
+        tickCount: tickCount + 1,
+        activeDisaster: updatedDisaster,
+        activePetition: newPetition,
+        logs: newLogs,
+        city: { ...city, grids: newGrids, xp: city.xp + net.xp, level: Math.floor(city.xp / 12000) + 1 },
         resources: {
           ...resources,
-          money: resources.money + revenue,
-          energy: Math.max(0, resources.energy + net.energy - consumption.energy),
-          water: Math.max(0, resources.water + net.water - consumption.water),
-          food: Math.max(0, resources.food + net.food - consumption.food),
-          pollution: Math.max(0, Math.min(100, resources.pollution + net.pollution)),
+          money: resources.money + Math.floor(revenue),
+          energy: Math.max(0, resources.energy + net.energy - (pop * 0.3)),
+          water: Math.max(0, resources.water + net.water - (pop * 0.3)),
+          food: Math.max(0, resources.food + net.food - (pop * 0.25)),
+          pollution: Math.max(0, Math.min(100, resources.pollution + (net.pollution / 40))),
           population: pop,
-          happiness: Math.max(0, Math.min(100, resources.happiness + (resources.pollution < 15 ? 1 : -1))),
+          prestige: resources.prestige + net.prestige,
+          terraformProgress: Math.max(0, Math.min(TERRAFORM_TARGET, resources.terraformProgress + terraformTick)),
+          happiness: Math.max(0, Math.min(100, resources.happiness + happinessMod)),
         }
       };
+    }
+
+    case 'MARKET_FLUX': {
+        const flux = () => Math.floor(Math.random() * 15) + 5;
+        return { ...state, market: { energy: flux(), water: flux(), food: flux() } };
+    }
+
+    case 'RESOLVE_PETITION': {
+        const effect = action.option.effect;
+        const res = { ...state.resources };
+        Object.keys(effect).forEach(k => { res[k] += effect[k]; });
+        return { ...state, activePetition: null, resources: res, logs: [...state.logs, `Overseer resolved ${state.activePetition.title}.`] };
     }
 
     case 'BUILD': {
-      const newGrids = { ...state.city.grids };
-      newGrids[state.city.activeRegion][action.index] = { ...action.b, uid: Date.now() };
-      return {
-        ...state,
-        city: { ...state.city, grids: newGrids },
-        resources: { ...state.resources, money: state.resources.money - action.b.cost },
-      };
+        if (state.resources.money < action.b.cost) return state;
+        const newGrids = { ...state.city.grids };
+        newGrids[state.city.activeRegion][action.index] = { ...action.b, stability: 100 };
+        return { ...state, city: { ...state.city, grids: newGrids }, resources: { ...state.resources, money: state.resources.money - action.b.cost } };
     }
 
-    case 'SET_SPECIALIZATION': {
-      return {
-        ...state,
-        city: {
-          ...state.city,
-          specializations: { ...state.city.specializations, [state.city.activeRegion]: action.specId }
-        }
-      };
+    case 'TRADE': {
+        const cost = state.market[action.res] * action.amount;
+        if (action.amount > 0 && state.resources.money < cost) return state;
+        if (action.amount < 0 && state.resources[action.res] < Math.abs(action.amount)) return state;
+        return {
+            ...state,
+            resources: { 
+                ...state.resources, 
+                money: state.resources.money - cost,
+                [action.res]: state.resources[action.res] + action.amount
+            }
+        };
     }
 
     case 'SET_REGION': return { ...state, city: { ...state.city, activeRegion: action.region } };
     case 'TOGGLE_PAUSE': return { ...state, gamePaused: !state.gamePaused };
+    case 'TOGGLE_EDICT': {
+        const exists = state.activeEdicts.includes(action.id);
+        if (!exists && state.resources.money < action.cost) return state;
+        return { ...state, activeEdicts: exists ? state.activeEdicts.filter(id => id !== action.id) : [...state.activeEdicts, action.id] };
+    }
     default: return state;
   }
 }
 
 export default function App() {
   const [state, dispatch] = useReducer(gameReducer, initialState);
-  const [inspectorIndex, setInspectorIndex] = useState(null);
+  const [view, setView] = useState('city');
+  const [buildIdx, setBuildIdx] = useState(null);
 
   useEffect(() => {
-    const timer = setInterval(() => dispatch({ type: 'TICK' }), TICK_RATE);
-    return () => clearInterval(timer);
+    const t = setInterval(() => dispatch({ type: 'TICK' }), TICK_RATE);
+    const m = setInterval(() => dispatch({ type: 'MARKET_FLUX' }), MARKET_REFRESH_RATE);
+    return () => { clearInterval(t); clearInterval(m); };
   }, [state.gamePaused]);
 
-  const currentRegion = REGIONS[state.city.activeRegion.toUpperCase()];
-  const currentSpec = SPECIALIZATIONS[state.city.specializations[state.city.activeRegion].toUpperCase()] || SPECIALIZATIONS.NONE;
+  const terraformPercent = (state.resources.terraformProgress / TERRAFORM_TARGET) * 100;
 
   return (
-    <div className="min-h-screen bg-[#08080a] text-slate-300 font-sans p-6 selection:bg-blue-500/30">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className={`min-h-screen transition-colors duration-1000 bg-[#020617] text-slate-100 font-sans flex flex-col overflow-hidden`}>
+      
+      {/* HUD BAR */}
+      <nav className="p-4 bg-black/60 border-b border-white/5 backdrop-blur-xl flex justify-between items-center z-[60]">
+        <div className="flex gap-10 items-center">
+            <h1 className="text-xl font-black italic tracking-tighter text-cyan-400">METRO-26 <span className="text-white/20 ml-2 text-[10px] not-italic font-bold">ALPHA</span></h1>
+            <div className="flex gap-6 text-[9px] font-black uppercase tracking-[0.2em] opacity-50">
+                {['city', 'council', 'trade'].map(v => (
+                    <button key={v} onClick={() => setView(v)} className={`hover:text-cyan-400 ${view === v ? 'text-cyan-400 opacity-100' : ''}`}>{v}</button>
+                ))}
+            </div>
+        </div>
         
-        {/* Header Stats */}
-        <header className="grid grid-cols-2 md:grid-cols-6 gap-3">
-          {[
-            { label: 'Credits', val: state.resources.money, icon: '💰', color: 'text-emerald-400' },
-            { label: 'Pop', val: state.resources.population, icon: '👥', color: 'text-blue-400' },
-            { label: 'Energy', val: state.resources.energy, icon: '⚡', color: 'text-yellow-400' },
-            { label: 'Water', val: state.resources.water, icon: '💧', color: 'text-cyan-400' },
-            { label: 'Food', val: state.resources.food, icon: '🥗', color: 'text-green-400' },
-            { label: 'Eco', val: `${100 - state.resources.pollution}%`, icon: '🌿', color: 'text-pink-400' },
-          ].map(stat => (
-            <div key={stat.label} className="bg-[#111114] border border-white/5 p-4 rounded-2xl">
-              <p className="text-[10px] font-black uppercase opacity-30 tracking-widest flex justify-between">
-                {stat.label} <span>{stat.icon}</span>
-              </p>
-              <p className={`text-lg font-black ${stat.color}`}>{Math.floor(stat.val).toLocaleString()}</p>
+        <div className="flex gap-4">
+            <div className="bg-white/5 px-4 py-1.5 rounded-full border border-white/5">
+                <p className="text-[10px] font-black text-cyan-400">${state.resources.money.toLocaleString()}</p>
             </div>
-          ))}
-        </header>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          
-          {/* Controls & Focus */}
-          <aside className="space-y-6">
-            <div className="bg-[#111114] rounded-3xl p-6 border border-white/5">
-              <h2 className="text-[10px] font-black uppercase tracking-widest opacity-30 mb-4 text-center">Admin Controls</h2>
-              <div className="space-y-2">
-                {Object.values(REGIONS).map(r => (
-                  <button 
-                    key={r.id}
-                    onClick={() => dispatch({ type: 'SET_REGION', region: r.id })}
-                    className={`w-full p-4 rounded-2xl flex items-center justify-between border transition-all ${state.city.activeRegion === r.id ? 'bg-blue-600 border-blue-400 text-white shadow-lg' : 'bg-white/5 border-transparent opacity-40 hover:opacity-100'}`}
-                  >
-                    <span className="text-xl">{r.icon}</span>
-                    <span className="text-[10px] font-black uppercase tracking-widest">{r.name}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-[#111114] rounded-3xl p-6 border border-white/5">
-              <h2 className="text-[10px] font-black uppercase tracking-widest opacity-30 mb-4 text-center">District Specialization</h2>
-              <div className="grid grid-cols-1 gap-2">
-                {Object.values(SPECIALIZATIONS).map(spec => (
-                  <button 
-                    key={spec.id}
-                    onClick={() => dispatch({ type: 'SET_SPECIALIZATION', specId: spec.id })}
-                    className={`p-3 rounded-xl text-left border transition-all ${currentSpec.id === spec.id ? 'bg-emerald-500/10 border-emerald-500/50' : 'bg-white/5 border-transparent opacity-40 hover:opacity-80'}`}
-                  >
-                    <p className="text-[10px] font-black uppercase text-white">{spec.name}</p>
-                    <p className="text-[9px] opacity-60 leading-tight">{spec.buff}</p>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </aside>
-
-          {/* Grid View */}
-          <main className="lg:col-span-3">
-            <div className="bg-[#111114] rounded-[3rem] p-8 border border-white/5 relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-8 flex items-center gap-2 opacity-20">
-                <span className="text-[10px] font-black uppercase tracking-widest">{currentRegion.name}</span>
-                <span className="text-2xl">{currentRegion.icon}</span>
-              </div>
-              
-              <div className="mb-8">
-                <h1 className="text-3xl font-black uppercase tracking-tighter text-white">Grid System <span className="text-blue-500">v14</span></h1>
-                <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Active Focus: {currentSpec.name}</p>
-              </div>
-
-              <div className="grid grid-cols-4 gap-4 max-w-2xl mx-auto">
-                {state.city.grids[state.city.activeRegion].map((b, i) => (
-                  <button 
-                    key={i}
-                    onClick={() => setInspectorIndex(i)}
-                    className={`aspect-square rounded-[2rem] border-2 transition-all flex flex-col items-center justify-center gap-2 ${b ? 'bg-[#18181c] border-white/10 hover:border-blue-500' : 'bg-white/[0.02] border-dashed border-white/5 hover:bg-white/5'}`}
-                  >
-                    {b ? (
-                      <>
-                        <span className="text-4xl drop-shadow-lg">{b.icon}</span>
-                        <span className="text-[8px] font-black uppercase opacity-40">{b.name}</span>
-                      </>
-                    ) : (
-                      <span className="text-xl opacity-20">+</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </main>
+            <button onClick={() => dispatch({ type: 'TOGGLE_PAUSE' })} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs">{state.gamePaused ? '▶' : '||'}</button>
         </div>
-      </div>
+      </nav>
 
-      {/* Building Inspector Modal */}
-      {inspectorIndex !== null && (
-        <div className="fixed inset-0 z-50 bg-[#08080a]/90 backdrop-blur-xl flex items-center justify-center p-6">
-          <div className="bg-[#111114] w-full max-w-5xl rounded-[4rem] p-12 border border-white/10 shadow-2xl relative animate-in zoom-in-95">
-            <button onClick={() => setInspectorIndex(null)} className="absolute top-10 right-10 w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-500/20 hover:text-red-500 transition-all">✕</button>
-            
-            <div className="mb-10 text-center">
-              <h2 className="text-4xl font-black uppercase tracking-tighter text-white">Fabrication Matrix</h2>
-              <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mt-2">Slot {inspectorIndex + 1} // {currentRegion.name}</p>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
-              {Object.values(BUILDING_DATA).filter(b => b.region.includes(state.city.activeRegion)).map(b => {
-                const canAfford = state.resources.money >= b.cost;
-                return (
-                  <button 
-                    key={b.id}
-                    disabled={!canAfford}
-                    onClick={() => { dispatch({ type: 'BUILD', index: inspectorIndex, b }); setInspectorIndex(null); }}
-                    className={`group relative overflow-hidden bg-[#18181c] border border-white/5 p-6 rounded-[2.5rem] flex flex-col items-center transition-all ${canAfford ? 'hover:scale-105 hover:border-blue-500' : 'opacity-20 cursor-not-allowed'}`}
-                  >
-                    <span className="text-5xl mb-4 group-hover:scale-110 transition-transform">{b.icon}</span>
-                    <p className="text-[11px] font-black uppercase text-white tracking-tighter">{b.name}</p>
-                    <p className="text-[12px] font-black text-emerald-400 mt-1">${b.cost.toLocaleString()}</p>
-                    
-                    {/* Tooltip-style yield data */}
-                    <div className="mt-4 pt-4 border-t border-white/5 w-full grid grid-cols-2 gap-y-1 text-[9px] font-bold opacity-60">
-                      <div className={b.energy > 0 ? 'text-yellow-400' : ''}>⚡ {b.energy || 0}</div>
-                      <div className={b.water > 0 ? 'text-cyan-400' : ''}>💧 {b.water || 0}</div>
-                      <div className={b.pollution < 0 ? 'text-green-400' : 'text-red-400'}>☣️ {b.pollution || 0}</div>
-                      <div className="text-blue-400">👥 {b.jobs || 0}</div>
+      <main className="flex-1 p-6 relative overflow-hidden">
+        {view === 'city' ? (
+            <div className="grid grid-cols-12 gap-8 h-full max-w-[1600px] mx-auto">
+                {/* STATUS PANEL */}
+                <div className="col-span-3 space-y-4">
+                    <div className="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8">
+                        <p className="text-[10px] font-black uppercase tracking-widest opacity-30 mb-6">Colony Resources</p>
+                        <div className="space-y-6">
+                            {[
+                                { k: 'energy', i: '⚡', c: 'bg-yellow-400' },
+                                { k: 'water', i: '💧', c: 'bg-blue-400' },
+                                { k: 'food', i: '🥬', c: 'bg-green-400' },
+                                { k: 'happiness', i: '😊', c: 'bg-pink-500' }
+                            ].map(r => (
+                                <div key={r.k}>
+                                    <div className="flex justify-between text-[10px] font-black mb-1.5 uppercase">
+                                        <span>{r.i} {r.k}</span>
+                                        <span className={state.resources[r.k] < 100 ? 'text-red-500 animate-pulse' : ''}>{Math.floor(state.resources[r.k])}</span>
+                                    </div>
+                                    <div className="h-1 bg-white/5 rounded-full"><div className={`h-full ${r.c} transition-all duration-1000`} style={{ width: `${Math.min(100, state.resources[r.k] / 50)}%` }} /></div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                  </button>
-                );
-              })}
+
+                    <div className="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 h-[280px] flex flex-col">
+                        <p className="text-[10px] font-black uppercase tracking-widest opacity-30 mb-4">Neural Logs</p>
+                        <div className="flex-1 space-y-2 overflow-hidden font-mono text-[9px] text-slate-500 uppercase tracking-tighter">
+                            {state.logs.map((log, i) => <div key={i} className="animate-in slide-in-from-left"># {log}</div>)}
+                        </div>
+                    </div>
+                </div>
+
+                {/* GRID PANEL */}
+                <div className="col-span-6 flex flex-col gap-6">
+                    <div className="flex gap-2 justify-center">
+                        {['surface', 'subsurface', 'orbit'].map(r => (
+                            <button 
+                                key={r} onClick={() => dispatch({ type: 'SET_REGION', region: r })}
+                                className={`px-8 py-2 rounded-full text-[9px] font-black uppercase tracking-widest transition-all border ${state.city.activeRegion === r ? 'bg-white text-black border-white' : 'border-white/5 opacity-30 hover:opacity-100'}`}
+                            >
+                                {r}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="relative aspect-square bg-white/[0.02] border border-white/5 rounded-[4rem] p-10 shadow-2xl overflow-hidden">
+                        {state.activeDisaster?.region === state.city.activeRegion && (
+                            <div className="absolute inset-0 z-20 flex items-center justify-center bg-red-950/20 backdrop-blur-sm animate-in fade-in">
+                                <div className="text-center p-8 border-2 border-red-500 rounded-[3rem] bg-black/80">
+                                    <span className="text-6xl block animate-bounce">{DISASTERS[state.activeDisaster.region].icon}</span>
+                                    <h2 className="text-2xl font-black uppercase tracking-tighter text-red-500 mt-4">{DISASTERS[state.activeDisaster.region].name} IN PROGRESS</h2>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="grid grid-cols-4 gap-4 h-full">
+                            {state.city.grids[state.city.activeRegion].map((b, i) => (
+                                <button 
+                                    key={i} onClick={() => !b && setBuildIdx(i)}
+                                    className={`rounded-3xl border transition-all flex flex-col items-center justify-center relative overflow-hidden group ${b ? 'bg-black/40 border-white/10' : 'bg-white/[0.02] border-dashed border-white/5 hover:border-white/20'}`}
+                                >
+                                    {b ? (
+                                        <>
+                                            <span className="text-4xl group-hover:scale-110 transition-transform">{b.icon}</span>
+                                            <div className="absolute bottom-3 w-10 h-0.5 bg-white/5 rounded-full overflow-hidden">
+                                                <div className={`h-full ${b.stability < 40 ? 'bg-red-500 animate-pulse' : 'bg-cyan-500'}`} style={{ width: `${b.stability}%` }} />
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <span className="opacity-0 group-hover:opacity-20 text-[8px] font-black uppercase">Assign</span>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* PROGRESS PANEL */}
+                <div className="col-span-3 space-y-4">
+                    <div className="bg-gradient-to-br from-cyan-900/40 to-indigo-950/40 border border-cyan-500/20 rounded-[2.5rem] p-8">
+                        <p className="text-[10px] font-black uppercase text-cyan-400 mb-1">Terraforming Phase</p>
+                        <h2 className="text-5xl font-black italic tracking-tighter mb-4">{Math.floor(terraformPercent)}%</h2>
+                        <div className="h-2 bg-black/40 rounded-full overflow-hidden"><div className="h-full bg-cyan-400 shadow-[0_0_15px_#22d3ee]" style={{ width: `${terraformPercent}%` }} /></div>
+                    </div>
+
+                    <div className="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8">
+                        <div className="flex justify-between items-center mb-4">
+                            <span className="text-[10px] font-black uppercase opacity-40">City Level</span>
+                            <span className="text-xl font-black">{state.city.level}</span>
+                        </div>
+                        <div className="h-1 bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-white/30" style={{ width: `${(state.city.xp % 12000) / 120}%` }} /></div>
+                    </div>
+                </div>
             </div>
+        ) : view === 'council' ? (
+            <div className="max-w-3xl mx-auto space-y-8 pt-10">
+                <div className="text-center mb-10">
+                    <h2 className="text-3xl font-black uppercase italic">Executive Edicts</h2>
+                    <p className="text-xs opacity-40 uppercase font-black mt-2">Overseer-Level Directives</p>
+                </div>
+                {EDICTS.map(e => {
+                    const active = state.activeEdicts.includes(e.id);
+                    return (
+                        <div key={e.id} className={`p-8 rounded-[3rem] border transition-all flex items-center justify-between ${active ? 'bg-cyan-500 border-cyan-400 text-black' : 'bg-white/5 border-white/10 opacity-60'}`}>
+                            <div className="flex items-center gap-6">
+                                <span className="text-5xl">{e.icon}</span>
+                                <div>
+                                    <h3 className="text-xl font-black uppercase">{e.name}</h3>
+                                    <p className="text-[10px] font-bold opacity-70 uppercase tracking-tighter">{e.effect}</p>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => dispatch({ type: 'TOGGLE_EDICT', id: e.id, cost: e.cost })}
+                                className={`px-10 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${active ? 'bg-black text-white' : 'bg-white/10 hover:bg-white hover:text-black text-white'}`}
+                            >
+                                {active ? 'Rescind' : `Approve ($${e.cost/1000}k)`}
+                            </button>
+                        </div>
+                    );
+                })}
+            </div>
+        ) : (
+            <div className="max-w-5xl mx-auto pt-10 grid grid-cols-3 gap-8">
+                {['energy', 'water', 'food'].map(r => (
+                    <div key={r} className="bg-white/[0.02] border border-white/5 p-12 rounded-[4rem] text-center">
+                        <div className="text-6xl mb-6">{r === 'energy' ? '⚡' : r === 'water' ? '💧' : '🥬'}</div>
+                        <p className="text-[10px] font-black uppercase opacity-40 mb-1">{r} Index</p>
+                        <p className="text-5xl font-black mb-10 tracking-tighter text-cyan-400">${state.market[r]}</p>
+                        <div className="flex flex-col gap-3">
+                            <button onClick={() => dispatch({ type: 'TRADE', res: r, amount: 100 })} className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 py-4 rounded-2xl font-black text-[10px] uppercase hover:bg-emerald-500 hover:text-black transition-all">Buy 100u</button>
+                            <button onClick={() => dispatch({ type: 'TRADE', res: r, amount: -100 })} className="bg-red-500/20 text-red-400 border border-red-500/20 py-4 rounded-2xl font-black text-[10px] uppercase hover:bg-red-500 hover:text-black transition-all">Sell 100u</button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        )}
+      </main>
+
+      {/* OVERLAYS */}
+      {state.activePetition && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-in fade-in">
+              <div className="bg-[#0f172a] border border-cyan-500/20 w-full max-w-xl rounded-[4rem] p-12 text-center shadow-2xl ring-1 ring-cyan-500/10">
+                  <div className="text-5xl mb-6">📜</div>
+                  <h2 className="text-3xl font-black uppercase italic tracking-tighter text-cyan-400">{state.activePetition.title}</h2>
+                  <p className="mt-4 text-slate-400 font-medium leading-relaxed">{state.activePetition.text}</p>
+                  <div className="grid gap-3 mt-10">
+                      {state.activePetition.options.map((opt, i) => (
+                          <button key={i} onClick={() => dispatch({ type: 'RESOLVE_PETITION', option: opt })} className="w-full bg-white/5 py-5 rounded-3xl font-black text-[10px] uppercase tracking-widest hover:bg-white hover:text-black border border-white/5 transition-all">{opt.label}</button>
+                      ))}
+                  </div>
+              </div>
           </div>
-        </div>
       )}
 
-      <style>{`
-        @keyframes zoom-in { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .animate-in { animation: 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        .zoom-in-95 { animation-name: zoom-in; }
-      `}</style>
+      {buildIdx !== null && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/90 backdrop-blur-xl animate-in fade-in">
+              <div className="bg-[#020617] border border-white/5 w-full max-w-3xl rounded-[4rem] p-12">
+                  <div className="flex justify-between items-center mb-10">
+                    <h2 className="text-3xl font-black uppercase italic tracking-tighter">Construction</h2>
+                    <button onClick={() => setBuildIdx(null)} className="text-xl opacity-30">✕</button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-4 scrollbar-hide">
+                      {Object.values(BUILDING_DATA).filter(b => b.region.includes(state.city.activeRegion)).map(b => (
+                          <button 
+                            key={b.id} disabled={state.resources.money < b.cost}
+                            onClick={() => { dispatch({ type: 'BUILD', index: buildIdx, b }); setBuildIdx(null); }}
+                            className="flex items-center gap-6 bg-white/[0.03] p-8 rounded-[3rem] border border-white/5 hover:border-cyan-500 group disabled:opacity-20 transition-all text-left"
+                          >
+                              <span className="text-5xl group-hover:scale-110 transition-transform">{b.icon}</span>
+                              <div>
+                                  <p className="text-lg font-black uppercase tracking-tighter">{b.name}</p>
+                                  <p className="text-emerald-400 text-xs font-bold">${b.cost.toLocaleString()}</p>
+                              </div>
+                          </button>
+                      ))}
+                  </div>
+              </div>
+          </div>
+      )}
     </div>
   );
 }
