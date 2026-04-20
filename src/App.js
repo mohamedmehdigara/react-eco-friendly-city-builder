@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useState, useMemo } from 'react';
+import React, { useReducer, useEffect, useState } from 'react';
 
 // --- Constants ---
 const TICK_RATE = 2000;
